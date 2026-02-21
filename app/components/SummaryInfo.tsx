@@ -4,6 +4,7 @@ import { Button, Card, Grid, Typography } from '@mui/material'
 import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
 import { eventBus } from '../modules/modules';
 import { Events } from '../modules/events';
+import ExcelUploadButton from './ExcelUploadButton';
 
 export default function SummaryInfo() {
   const onClickCurrecyRateBtn = () => {
@@ -19,14 +20,17 @@ export default function SummaryInfo() {
           </Typography>
           <Typography className="text-gray-500 mt-1">매매 내역 및 자산 분석</Typography>
         </div>
-        <Button 
-          variant="contained" 
-          startIcon={<CurrencyExchangeIcon />}
-          onClick={onClickCurrecyRateBtn}
-          className="bg-white text-gray-700 shadow-sm border border-gray-200 hover:bg-gray-50 normal-case px-6 py-2 rounded-xl"
-        >
-          환율 설정
-        </Button>
+        <div className='flex gap-2'>
+          <ExcelUploadButton />
+          <Button 
+            variant="contained" 
+            startIcon={<CurrencyExchangeIcon />}
+            onClick={onClickCurrecyRateBtn}
+            className="bg-white text-gray-700 shadow-sm border border-gray-200 hover:bg-gray-50 normal-case px-6 py-2 rounded-xl"
+          >
+            환율 설정
+          </Button>
+        </div>
       </div>
 
       <Grid container spacing={3}>
