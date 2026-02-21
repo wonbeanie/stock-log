@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -13,6 +13,8 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import HistoryIcon from '@mui/icons-material/History';
+import { eventBus } from '../modules/modules';
+import { Events } from '../modules/events';
 
 interface TradeRecord {
   date: string;
@@ -22,7 +24,7 @@ interface TradeRecord {
 }
 
 export default function TradeDetailModal() {
-  const [open, setOpen] = useState<boolean>(true);
+  const [open, setOpen] = useState<boolean>(false);
   const [stockName, setStockName] = useState<string>('Apple Inc.');
   const [ticker, setTicker] = useState<string>('AAPL');
   const [tradeHistory, setTradeHistory] = useState<TradeRecord[]>(
@@ -32,6 +34,15 @@ export default function TradeDetailModal() {
       { date: '2025.12.20', type: '매도', price: 260000, amount: 2 },
     ]
   );
+
+  useEffect(()=>{
+    eventBus.on(Events.SHOW_DETAIL_MODAL, onOpen);
+    eventBus.on(Events.HIDE_DETAIL_MODAL, onClose);
+  });
+
+  const onOpen = () => {
+    setOpen(true);
+  }
 
   const onClose = () => {
     setOpen(false);

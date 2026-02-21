@@ -1,7 +1,15 @@
+'use client'
+
 import { Button, Card, Grid, Typography } from '@mui/material'
 import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
+import { eventBus } from '../modules/modules';
+import { Events } from '../modules/events';
 
 export default function SummaryInfo() {
+  const onClickCurrecyRateBtn = () => {
+    eventBus.emit(Events.SHOW_RATE_MODAL);
+  }
+
   return (
     <>
       <div className="flex justify-between items-end">
@@ -14,6 +22,7 @@ export default function SummaryInfo() {
         <Button 
           variant="contained" 
           startIcon={<CurrencyExchangeIcon />}
+          onClick={onClickCurrecyRateBtn}
           className="bg-white text-gray-700 shadow-sm border border-gray-200 hover:bg-gray-50 normal-case px-6 py-2 rounded-xl"
         >
           환율 설정

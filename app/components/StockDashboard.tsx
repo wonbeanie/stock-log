@@ -1,7 +1,14 @@
 import { Card, Chip, Grid, IconButton, Typography } from '@mui/material'
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import { eventBus } from '../modules/modules';
+import { Events } from '../modules/events';
 
 export default function StockDashboard() {
+
+  const showDetail = () => {
+    eventBus.emit(Events.SHOW_DETAIL_MODAL);
+  }
+
   return (
     <Grid container spacing={4} className="animate-in fade-in slide-in-from-bottom-4 duration-700">
       <Grid size={{ xs: 12, md: 7 }}>
@@ -22,10 +29,7 @@ export default function StockDashboard() {
               </thead>
               <tbody className="divide-y divide-gray-50">
                 {new Array(15).fill(0).map((_, i) => (
-                  <tr key={i} className="hover:bg-gray-50/50 transition-colors group" onClick={() => {
-                    // 클릭시 클릭한 종목에 대한 매매내역 팝업으로
-                    console.log("ㄷㄱㅈㄷㄱㅈ");
-                  }}>
+                  <tr key={i} className="hover:bg-gray-50/50 transition-colors group" onClick={showDetail}>
                     <td className="px-6 py-4 font-bold text-gray-900 text-sm">Apple Inc. <span className="text-gray-300 font-normal ml-1">AAPL</span></td>
                     <td className="px-6 py-4 text-center">
                       <Chip label="124일" size="small" className="bg-blue-50 text-blue-600 font-bold text-[10px]" />

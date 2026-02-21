@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -14,15 +14,26 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
+import { eventBus } from '../modules/modules';
+import { Events } from '../modules/events';
 
 export default function ExchangeRateModal() {
   const [rate, setRate] = useState<string>("1350.5");
   const [open, setOpen] = useState<boolean>(false);
 
+  useEffect(()=>{
+    eventBus.on(Events.SHOW_RATE_MODAL, onOpen)
+    eventBus.on(Events.HIDE_RATE_MODAL, onClose);
+  });
+
   const handleSave = () => {
     // onSave(parseFloat(rate));
     onClose();
   };
+
+  const onOpen = () => {
+    setOpen(true);
+  }
 
   const onClose = () => {
     setOpen(false);
