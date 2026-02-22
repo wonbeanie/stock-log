@@ -4,9 +4,13 @@ import React, { useRef } from 'react';
 import { Button } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import * as XLSX from 'xlsx';
+import { excelData } from '../modules/utils';
+import { useSetAtom } from 'jotai';
+import { updateExcelDataAtom } from '../store/atoms';
 
 export default function ExcelUploadButton() {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const updateData = useSetAtom(updateExcelDataAtom);
 
   const handleButtonClick = () => {
     fileInputRef.current?.click();
@@ -27,68 +31,11 @@ export default function ExcelUploadButton() {
       
       const jsonData = XLSX.utils.sheet_to_json(ws);
 
-      console.log(formatData(jsonData));
+      updateData(jsonData as excelData[]);
     };
 
     reader.readAsArrayBuffer(file);
   };
-
-  const formatData = (jsonData : any[]) => {
-    const header = jsonData.slice(0, 1)[0];
-    jsonData = jsonData.slice(1);
-
-    let result = [];
-    for(let i = 0; i < jsonData.length; i += 2){
-      if(!jsonData[i] || !jsonData[i+1]){
-          continue;
-      }
-
-      const firstData = {...jsonData[i]};
-      const secondData = Object.fromEntries(
-        Object.entries(jsonData[i+1]).map(([key, value])=>{
-          let newKey = key;
-          switch(key){
-            case "종목명":
-              newKey = "종목코드";
-              break;
-            case "수량":
-              newKey = "단가";
-              break;
-            case "거래금액":
-              newKey = "정산금액";
-              break;
-            case "잔고":
-              newKey = "잔고금액";
-              break;
-            case "이율":
-              newKey = "이자";
-              break;
-            case "수수료":
-              newKey = "세금";
-              break;
-            case "연체료":
-              newKey = "변제금";
-              break;
-            case "거래일자":
-              value = `${firstData[key]} ${value}`;
-              break;
-          }
-
-          return [newKey, value]
-        })
-      );
-
-      result.push({
-        ...firstData,
-        ...secondData
-      });
-    }
-
-    return {
-      header,
-      data : result
-    };
-  }
 
   return (
     <>

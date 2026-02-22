@@ -5,8 +5,12 @@ import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
 import { eventBus } from '../modules/modules';
 import { Events } from '../modules/events';
 import ExcelUploadButton from './ExcelUploadButton';
+import { useAtomValue } from 'jotai';
+import { summaryOverviewAtom } from '../store/atoms';
 
 export default function SummaryInfo() {
+  const summary = useAtomValue(summaryOverviewAtom);
+
   const onClickCurrecyRateBtn = () => {
     eventBus.emit(Events.SHOW_RATE_MODAL);
   }
@@ -35,10 +39,10 @@ export default function SummaryInfo() {
 
       <Grid container spacing={3}>
         {[
-          { label: '총 투자 금액', value: '125,000,000', unit: '원', color: 'text-gray-900' },
-          { label: '현재 투자 금액', value: '138,500,000', unit: '원', color: 'text-blue-600' },
-          { label: '실현 수익률', value: '+12.4', unit: '%', color: 'text-red-500' },
-          { label: '누적 배당금', value: '2,450,000', unit: '원', color: 'text-emerald-600' },
+          { label: '총 투자 금액', value: summary.total, unit: '원', color: 'text-gray-900' },
+          { label: '현재 투자 금액', value: summary.current, unit: '원', color: 'text-blue-600' },
+          { label: '실현 수익률', value: summary.profit, unit: '%', color: 'text-red-500' },
+          { label: '누적 배당금', value: summary.dividend, unit: '원', color: 'text-emerald-600' },
         ].map((item, idx) => (
           <Grid size={{ xs: 12, sm: 6, md: 3 }} key={idx}>
             <Card className="shadow-sm border-none rounded-2xl p-5 bg-white">
@@ -47,7 +51,7 @@ export default function SummaryInfo() {
               </Typography>
               <div className="flex items-baseline gap-1">
                 <Typography variant="h5" className={`font-black ${item.color}`}>
-                  {item.value}
+                  {item.value.toLocaleString()}
                 </Typography>
                 <Typography className="text-gray-400 font-medium text-sm">{item.unit}</Typography>
               </div>
