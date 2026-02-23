@@ -1,14 +1,12 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Dialog,
   DialogTitle,
   DialogContent,
   Typography,
   IconButton,
-  Chip,
-  Divider,
   Box
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
@@ -38,7 +36,12 @@ export default function TradeDetailModal() {
   useEffect(()=>{
     eventBus.on(Events.SHOW_DETAIL_MODAL, onOpen);
     eventBus.on(Events.HIDE_DETAIL_MODAL, onClose);
-  });
+
+    return () => {
+      eventBus.off(Events.SHOW_DETAIL_MODAL, onOpen);
+      eventBus.off(Events.HIDE_DETAIL_MODAL, onClose);
+    }
+  }, []);
 
   const onOpen = () => {
     setOpen(true);

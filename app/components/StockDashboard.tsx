@@ -35,7 +35,7 @@ export default function StockDashboard() {
                   Object.entries(currentStocks).map(([stockName, stock], i) => {
                     return (
                     <tr key={i} className="hover:bg-gray-50/50 transition-colors group" onClick={showDetail}>
-                      <td className="px-6 py-4 font-bold text-gray-900 text-sm">{stockName} <span className="text-gray-300 font-normal ml-1">{stock.ticker}</span></td>
+                      <td className="px-6 py-4 font-bold text-gray-900 text-sm">{stockName} <div className="text-gray-300 font-normal">{stock.ticker}</div></td>
                       <td className="px-6 py-4 text-center">
                         <Chip label={`${stock.dateOfPossession}일`} size="small" className="bg-blue-50 text-blue-600 font-bold text-[10px]" />
                       </td>

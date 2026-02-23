@@ -1,13 +1,25 @@
 import { atom } from 'jotai';
-import { excelData, processExcelData } from '../modules/utils';
+import { excelData, getHash, processExcelData } from '../modules/utils';
+import { atomWithStorage } from 'jotai/utils';
 
-export const totalInvestmentAtom = atom(0);
-export const currentInvestmentAtom = atom(0);
-export const realizedProfitAtom = atom(0);
-export const dividendAtom = atom(0);
+export const stocksDataAtom = atomWithStorage<StocksData>("STOCKS_DATA", {
+  totalInvestmenet : 0,
+  currentInvestment : 0,
+  realizedProfit : 0,
+  dividend : 0,
+  currentStocks : {},
+  pastSales : []
+});
 
-export const currentStocksAtom = atom<{[name: string]: CurrentStock}>({});
-export const pastSalesAtom = atom<PastSale[]>([]);
+export const lastHashAtom = atomWithStorage<string>("LAST_HASH", '');
+
+export const totalInvestmentAtom = atom((get) => get(stocksDataAtom).totalInvestmenet);
+export const currentInvestmentAtom = atom((get) => get(stocksDataAtom).currentInvestment);
+export const realizedProfitAtom = atom((get) => get(stocksDataAtom).realizedProfit);
+export const dividendAtom = atom((get) => get(stocksDataAtom).dividend);
+
+export const currentStocksAtom = atom((get) => get(stocksDataAtom).currentStocks);
+export const pastSalesAtom = atom((get) => get(stocksDataAtom).pastSales);
 
 export const stockDashboardAtom = atom((get)=>({
   currentStocks : get(currentStocksAtom),
@@ -21,18 +33,28 @@ export const summaryOverviewAtom = atom((get) => ({
   dividend: get(dividendAtom),
 }));
 
-export const updateExcelDataAtom = atom(
+export const updateStocksDataAtom = atom(
   null,
   (get, set, playload : excelData[]) => {
-    const data = processExcelData(playload as excelData[]);
-    set(totalInvestmentAtom, data.totalInvestmenet);
-    set(currentInvestmentAtom, data.currentInvestment);
-    set(realizedProfitAtom, data.realizedProfit);
-    set(dividendAtom, data.dividend);
-    set(currentStocksAtom, data.currentStocks);
-    set(pastSalesAtom, data.pastSales);
+    const newHash = getHash(playload);
+    if(newHash === get(lastHashAtom)){
+      return;
+    }
+
+    const stocksData = processExcelData(playload);
+
+    set(stocksDataAtom, stocksData);
+    set(lastHashAtom, newHash)
   }
 )
+export interface StocksData {
+  totalInvestmenet : number;
+  currentInvestment : number;
+  realizedProfit : number;
+  dividend : number;
+  currentStocks : {[name : string] : CurrentStock};
+  pastSales : PastSale[];
+}
 
 export interface CurrentStock {
   name : string;

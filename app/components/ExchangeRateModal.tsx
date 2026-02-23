@@ -22,9 +22,14 @@ export default function ExchangeRateModal() {
   const [open, setOpen] = useState<boolean>(false);
 
   useEffect(()=>{
-    eventBus.on(Events.SHOW_RATE_MODAL, onOpen)
+    eventBus.on(Events.SHOW_RATE_MODAL, onOpen);
     eventBus.on(Events.HIDE_RATE_MODAL, onClose);
-  });
+
+    return () => {
+      eventBus.off(Events.SHOW_RATE_MODAL, onOpen);
+      eventBus.off(Events.HIDE_RATE_MODAL, onClose);
+    }
+  }, []);
 
   const handleSave = () => {
     // onSave(parseFloat(rate));

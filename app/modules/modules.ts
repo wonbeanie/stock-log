@@ -12,6 +12,13 @@ class EventBus {
     if (!this.listeners[event]) return;
     this.listeners[event].forEach(callback => callback(data));
   }
+
+  off(event: string, callback : Function){
+    if(!this.listeners[event]){
+      return;
+    }
+    this.listeners[event] = this.listeners[event].filter(listener => listener !== callback);
+  }
 }
 
 export const eventBus = new EventBus();

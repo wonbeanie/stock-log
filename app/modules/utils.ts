@@ -1,13 +1,13 @@
-import { CurrentStock, PastSale } from "../store/atoms";
+import { CurrentStock, PastSale, StocksData } from "../store/atoms";
 
-export const processExcelData = (jsonData : excelData[]) => {
+export const processExcelData = (excelData : excelData[]) => {
   const result: StockHistory[] = [];
 
-  for(let i = 1; i < jsonData.length; i += 2){
-    const firstData = jsonData[i] as OddLineData;
-    const secondData = jsonData[i+1] as EvenLineData;
+  for(let i = 1; i < excelData.length; i += 2){
+    const firstData = excelData[i] as OddLineData;
+    const secondData = excelData[i+1] as EvenLineData;
 
-    if(!jsonData[i] || !jsonData[i+1]){
+    if(!excelData[i] || !excelData[i+1]){
         continue;
     }
 
@@ -26,10 +26,18 @@ export const processExcelData = (jsonData : excelData[]) => {
     result.push(stockHistory);
   }
 
-  return formatStocks(result);
+  const stocksData = formatStocks(result);
+  return stocksData;
 }
 
-export const formatStocks = (data : StockHistory[]) => {
+export const getHash = (data : excelData[]) => {
+  const firstTrandedDate = data[1]["거래일자"] + data[2]["거래일자"];
+  const lastTrandedDate = data[data.length-2]["거래일자"] + data[data.length-1]["거래일자"];
+  
+  return `len:${firstTrandedDate}-${lastTrandedDate}-${data.length}`;
+}
+
+const formatStocks = (data : StockHistory[]) : StocksData => {
   let totalInvestmenet = 0;
   let currentInvestment = 0;
   let dividend = 0;
@@ -161,6 +169,11 @@ const dateSort = (type = "asc") => {
 }
 
 export type excelData = OddLineData | EvenLineData;
+
+const STORAGE_KEYS = {
+  EXCEL_DATA : "ExcelData",
+  STOCKS_DATA : "StocksData"
+}
 
 interface OddLineData {
   "거래금액" : number;

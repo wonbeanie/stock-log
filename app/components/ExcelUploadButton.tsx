@@ -6,11 +6,11 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import * as XLSX from 'xlsx';
 import { excelData } from '../modules/utils';
 import { useSetAtom } from 'jotai';
-import { updateExcelDataAtom } from '../store/atoms';
+import { updateStocksDataAtom } from '../store/atoms';
 
 export default function ExcelUploadButton() {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const updateData = useSetAtom(updateExcelDataAtom);
+  const setExcelData = useSetAtom(updateStocksDataAtom);
 
   const handleButtonClick = () => {
     fileInputRef.current?.click();
@@ -31,7 +31,7 @@ export default function ExcelUploadButton() {
       
       const jsonData = XLSX.utils.sheet_to_json(ws);
 
-      updateData(jsonData as excelData[]);
+      setExcelData(jsonData as excelData[]);
     };
 
     reader.readAsArrayBuffer(file);
