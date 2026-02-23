@@ -69,6 +69,7 @@ const formatStocks = (data : StockHistory[]) : StocksData => {
         name : history["종목명"],
         type : history["거래유형"],
         date : history["거래일자"],
+        amount : history["수량"],
         profits : tradedPrice
       });
       if(!currentNames.has(history["종목명"])){
@@ -112,6 +113,7 @@ const formatStocks = (data : StockHistory[]) : StocksData => {
         name : history["종목명"],
         type : history["거래유형"],
         date : history["거래일자"],
+        amount : history["수량"],
         profits
       });
     }
@@ -170,11 +172,6 @@ const dateSort = (type = "asc") => {
 
 export type excelData = OddLineData | EvenLineData;
 
-const STORAGE_KEYS = {
-  EXCEL_DATA : "ExcelData",
-  STOCKS_DATA : "StocksData"
-}
-
 interface OddLineData {
   "거래금액" : number;
   "거래유형" : string;
@@ -198,17 +195,6 @@ interface EvenLineData {
   "이율" : number;
   "잔고" : number;
   "종목명" : string;
-}
-            
-interface FormatEvenLineData {
-  "정산금액" : number;
-  "거래일자" : string;
-  "단가" : number;
-  "세금" : number;
-  "변제금" : number;
-  "이자" : number;
-  "잔고금액" : number;
-  "종목코드" : string;
 }
 
 interface StockHistory {

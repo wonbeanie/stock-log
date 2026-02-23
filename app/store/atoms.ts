@@ -69,4 +69,5 @@ export interface PastSale {
   type : string;
   date : string;
   profits : number;
+  amount : number;
 }

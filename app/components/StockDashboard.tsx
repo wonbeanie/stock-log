@@ -8,8 +8,8 @@ import { stockDashboardAtom } from '../store/atoms';
 export default function StockDashboard() {
   const {currentStocks, pastSales} = useAtomValue(stockDashboardAtom);
 
-  const showDetail = () => {
-    eventBus.emit(Events.SHOW_DETAIL_MODAL);
+  const showDetail = (stockName : string) => {
+    eventBus.emit(Events.SHOW_DETAIL_MODAL, stockName);
   }
 
   return (
@@ -18,7 +18,6 @@ export default function StockDashboard() {
         <Card className="shadow-lg border border-gray-100 rounded-3xl flex flex-col h-[600px] overflow-hidden bg-white">
           <div className="p-6 flex justify-between items-center border-b border-gray-50">
             <Typography variant="h6" className="font-bold text-gray-800">현재 보유 종목</Typography>
-            <IconButton className="bg-gray-50"><CalendarMonthIcon/></IconButton>
           </div>
           <div className="flex-grow overflow-y-auto custom-scrollbar">
             <table className="w-full text-left">
@@ -34,10 +33,10 @@ export default function StockDashboard() {
                 {
                   Object.entries(currentStocks).map(([stockName, stock], i) => {
                     return (
-                    <tr key={i} className="hover:bg-gray-50/50 transition-colors group" onClick={showDetail}>
+                    <tr key={i} className="hover:bg-gray-50/50 transition-colors group" onClick={()=>showDetail(stockName)}>
                       <td className="px-6 py-4 font-bold text-gray-900 text-sm">{stockName} <div className="text-gray-300 font-normal">{stock.ticker}</div></td>
                       <td className="px-6 py-4 text-center">
-                        <Chip label={`${stock.dateOfPossession}일`} size="small" className="bg-blue-50 text-blue-600 font-bold text-[10px]" />
+                        <Chip label={`${stock.dateOfPossession.toLocaleString()}일`} size="small" className="bg-blue-50 text-blue-600 font-bold text-[10px]" />
                       </td>
                       <td className="px-6 py-4 text-center text-gray-600 text-sm font-medium">{stock.amountInput.toLocaleString()}원</td>
                       <td className="px-6 py-4 text-right font-black text-gray-400 group-hover:text-blue-600">{stock.ratio}%</td>

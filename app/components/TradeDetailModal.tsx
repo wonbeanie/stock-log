@@ -13,25 +13,21 @@ import CloseIcon from '@mui/icons-material/Close';
 import HistoryIcon from '@mui/icons-material/History';
 import { eventBus } from '../modules/modules';
 import { Events } from '../modules/events';
+import { useAtom } from 'jotai';
+import { pastSalesAtom } from '../store/atoms';
+import { useAtomCallback } from 'jotai/utils';
 
 interface TradeRecord {
   date: string;
-  type: '매수' | '매도';
+  type: string;
   price: number;
   amount: number;
 }
 
 export default function TradeDetailModal() {
   const [open, setOpen] = useState<boolean>(false);
-  const [stockName, setStockName] = useState<string>('Apple Inc.');
-  const [ticker, setTicker] = useState<string>('AAPL');
-  const [tradeHistory, setTradeHistory] = useState<TradeRecord[]>(
-    [
-      { date: '2026.02.10', type: '매수', price: 245000, amount: 10 },
-      { date: '2026.01.15', type: '매수', price: 230000, amount: 5 },
-      { date: '2025.12.20', type: '매도', price: 260000, amount: 2 },
-    ]
-  );
+  const [stockName, setStockName] = useState<string>('Apple Inc.');;
+  const [tradeHistory, setTradeHistory] = useState<TradeRecord[]>([]);
 
   useEffect(()=>{
     eventBus.on(Events.SHOW_DETAIL_MODAL, onOpen);
@@ -43,9 +39,26 @@ export default function TradeDetailModal() {
     }
   }, []);
 
-  const onOpen = () => {
+  const onOpen = async (stockName : string) => {
+    const tradeHistory = await getTradeHistory(stockName);
+    setStockName(stockName);
+    setTradeHistory(tradeHistory);
     setOpen(true);
   }
+
+  const getTradeHistory = useAtomCallback(
+    (get, set, stockName : string) => {
+      const pastSales = get(pastSalesAtom);
+      return pastSales.filter((history) => history.name === stockName).map((history) => {
+        return {
+          date: history.date,
+          type: history.type,
+          price: history.profits,
+          amount: history.amount
+        }
+      });
+    }
+  )
 
   const onClose = () => {
     setOpen(false);
@@ -63,12 +76,10 @@ export default function TradeDetailModal() {
         },
       }}
     >
-      {/* 헤더: 종목명과 티커 */}
       <DialogTitle className="flex justify-between items-start pt-6">
         <Box>
           <div className="flex items-center gap-2 mb-1">
             <Typography variant="h5" className="font-black text-gray-900">{stockName}</Typography>
-            <Typography className="text-gray-400 font-medium">{ticker}</Typography>
           </div>
           <Typography variant="caption" className="text-blue-600 font-bold flex items-center gap-1">
             <HistoryIcon sx={{ fontSize: 14 }} /> 전체 매매 히스토리
@@ -92,7 +103,7 @@ export default function TradeDetailModal() {
               <div className="flex-grow">
                 <div className="flex justify-between items-center mb-1">
                   <Typography className="text-sm font-bold text-gray-800">
-                    {trade.type} {trade.amount}주
+                    {trade.type} {trade.amount.toLocaleString()}주
                   </Typography>
                   <Typography className="text-[11px] text-gray-400 font-medium">
                     {trade.date}
