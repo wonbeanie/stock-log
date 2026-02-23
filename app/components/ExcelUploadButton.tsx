@@ -16,26 +16,46 @@ export default function ExcelUploadButton() {
     fileInputRef.current?.click();
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
 
-    const reader = new FileReader();
-    reader.onload = (evt) => {
-      const data = evt.target?.result;
-      if (!data) return;
+    const excelsData = await readFilesAsBuffer(files);
 
-      const wb = XLSX.read(data, { type: 'array' });
-      const wsname = wb.SheetNames[0];
-      const ws = wb.Sheets[wsname];
-      
-      const jsonData = XLSX.utils.sheet_to_json(ws);
-
-      setExcelData(jsonData as excelData[]);
-    };
-
-    reader.readAsArrayBuffer(file);
+    setExcelData(excelsData.flat());
   };
+
+
+  const readFilesAsBuffer = async (files : FileList) => {
+    const promises = Array.from(files).map((file) => {
+      return new Promise((resolve)=>{
+        const reader = new FileReader();
+      
+        reader.onload = (evt) => {
+          const data = evt.target?.result;
+          if (!data) return;
+
+          const wb = XLSX.read(data, { type: 'array' });
+          const wsname = wb.SheetNames[0];
+          const ws = wb.Sheets[wsname];
+          
+          const excelData = XLSX.utils.sheet_to_json(ws).slice(1) as excelData[];
+          resolve(excelData)
+        };
+
+        reader.readAsArrayBuffer(file);
+      }) as Promise<excelData[]>;
+    })
+
+    try {
+      const results = await Promise.all(promises);
+      return results;
+    }
+    catch (err) {
+      console.log(err);
+      return [];
+    }
+  }
 
   return (
     <>
@@ -45,6 +65,7 @@ export default function ExcelUploadButton() {
         ref={fileInputRef}
         onChange={handleFileChange}
         style={{ display: 'none' }}
+        multiple
       />
       <Button
         variant="contained"

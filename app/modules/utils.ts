@@ -3,7 +3,7 @@ import { CurrentStock, PastSale, StocksData } from "../store/atoms";
 export const processExcelData = (excelData : excelData[]) => {
   const result: StockHistory[] = [];
 
-  for(let i = 1; i < excelData.length; i += 2){
+  for(let i = 0; i < excelData.length; i += 2){
     const firstData = excelData[i] as OddLineData;
     const secondData = excelData[i+1] as EvenLineData;
 
