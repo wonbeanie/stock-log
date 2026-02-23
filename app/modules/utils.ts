@@ -1,6 +1,6 @@
 import { CurrentStock, PastSale, StocksData } from "../store/atoms";
 
-export const processExcelData = (excelData : excelData[]) => {
+export const processExcelData = (excelData : excelData[], exchangeRate = 1450) => {
   const result: StockHistory[] = [];
 
   for(let i = 0; i < excelData.length; i += 2){
@@ -26,7 +26,7 @@ export const processExcelData = (excelData : excelData[]) => {
     result.push(stockHistory);
   }
 
-  const stocksData = formatStocks(result);
+  const stocksData = formatStocks(result, exchangeRate);
   return stocksData;
 }
 
@@ -37,16 +37,14 @@ export const getHash = (data : excelData[]) => {
   return `len:${firstTrandedDate}-${lastTrandedDate}-${data.length}`;
 }
 
-const formatStocks = (data : StockHistory[]) : StocksData => {
-  let totalInvestmenet = 0;
+const formatStocks = (data : StockHistory[], exchangeRate = 1450) : StocksData => {
+  let totalInvestment = 0;
   let currentInvestment = 0;
   let dividend = 0;
   let realizedProfit = 0;
   
   let currentStocks : {[name : string] : CurrentStock} = {};
   let pastSales : PastSale[] = [];
-
-  let exchangeRate = 1450;
   let currentNames = new Set();
   
   data.sort(dateSort()).forEach((history) => {
@@ -63,7 +61,7 @@ const formatStocks = (data : StockHistory[]) : StocksData => {
       if(history["상세내용"].includes("외화")){
         tradedPrice *= exchangeRate;
       }
-      totalInvestmenet += tradedPrice;
+      totalInvestment += tradedPrice;
       currentInvestment += tradedPrice;
       pastSales.push({
         name : history["종목명"],
@@ -132,12 +130,14 @@ const formatStocks = (data : StockHistory[]) : StocksData => {
     })
   );
 
-  realizedProfit = (realizedProfit / totalInvestmenet) * 100;
+  realizedProfit = totalInvestment !== 0 ?
+                   (realizedProfit / totalInvestment) * 100 :
+                   0
 
   pastSales.sort(dateSort("desc"));
 
   return {
-    totalInvestmenet,
+    totalInvestment,
     currentInvestment,
     dividend,
     realizedProfit,

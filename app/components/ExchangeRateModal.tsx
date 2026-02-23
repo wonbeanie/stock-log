@@ -16,10 +16,15 @@ import CloseIcon from '@mui/icons-material/Close';
 import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
 import { eventBus } from '../modules/modules';
 import { Events } from '../modules/events';
+import { exchangeRateAtom, updateExchangeRatioAtom } from '../store/atoms';
+import { useAtomValue, useSetAtom } from 'jotai';
 
 export default function ExchangeRateModal() {
-  const [rate, setRate] = useState<string>("1350.5");
+  const exchangeRate = useAtomValue(exchangeRateAtom);
+  const [rate, setRate] = useState<number>(exchangeRate);
+  const [blurCheck, setBlurCheck] = useState<boolean>(true);
   const [open, setOpen] = useState<boolean>(false);
+  const updateExchangeRatio = useSetAtom(updateExchangeRatioAtom);
 
   useEffect(()=>{
     eventBus.on(Events.SHOW_RATE_MODAL, onOpen);
@@ -31,17 +36,23 @@ export default function ExchangeRateModal() {
     }
   }, []);
 
-  const handleSave = () => {
-    // onSave(parseFloat(rate));
+  const handleSave = async () => {
+    updateExchangeRatio(rate);
     onClose();
   };
 
-  const onOpen = () => {
+  const onOpen = async () => {
     setOpen(true);
   }
 
   const onClose = () => {
     setOpen(false);
+  }
+
+  const handleRateChange = (e : React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/[^\d]/g, "");
+
+    setRate(Number(value));
   }
 
   return (
@@ -72,9 +83,11 @@ export default function ExchangeRateModal() {
             fullWidth
             label="USD/KRW 환율"
             variant="outlined"
-            type="number"
-            value={rate}
-            onChange={(e) => setRate(e.target.value)}
+            type="text"
+            value={blurCheck ? rate.toLocaleString() : rate}
+            onFocus={()=>setBlurCheck(false)}
+            onBlur={()=>setBlurCheck(true)}
+            onChange={handleRateChange}
             slotProps={{
               input: {
                 startAdornment: <InputAdornment position="start">₩</InputAdornment>,
