@@ -1,16 +1,13 @@
-import { Card, Chip, Grid, IconButton, Typography } from '@mui/material'
-import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import { eventBus } from '../modules/modules';
-import { Events } from '../modules/events';
+'use client'
+
+import { Card, Grid, Typography } from '@mui/material'
 import { useAtomValue } from 'jotai';
-import { stockDashboardAtom } from '../store/atoms';
+import { isOfflineAtom, stockDashboardAtom } from '../store/atoms';
+import CurrentStock from './CurrentStock';
 
 export default function StockDashboard() {
   const {currentStocks, pastSales} = useAtomValue(stockDashboardAtom);
-
-  const showDetail = (stockName : string) => {
-    eventBus.emit(Events.SHOW_DETAIL_MODAL, stockName);
-  }
+  const isOffline = useAtomValue(isOfflineAtom);
 
   return (
     <Grid container spacing={4} className="animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -26,21 +23,16 @@ export default function StockDashboard() {
                   <th className="px-6 py-4">종목명</th>
                   <th className="px-6 py-4 text-center">보유일</th>
                   <th className="px-6 py-4 text-center">투입 금액</th>
-                  <th className="px-6 py-4 text-right">비중</th>
+                  {
+                    !isOffline && <th className="px-6 py-4 text-center">수익률</th>
+                  }
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
                 {
                   Object.entries(currentStocks).map(([stockName, stock], i) => {
                     return (
-                    <tr key={i} className="hover:bg-gray-50/50 transition-colors group" onClick={()=>showDetail(stockName)}>
-                      <td className="px-6 py-4 font-bold text-gray-900 text-sm">{stockName} <div className="text-gray-300 font-normal">{stock.ticker}</div></td>
-                      <td className="px-6 py-4 text-center">
-                        <Chip label={`${stock.dateOfPossession.toLocaleString()}일`} size="small" className="bg-blue-50 text-blue-600 font-bold text-[10px]" />
-                      </td>
-                      <td className="px-6 py-4 text-center text-gray-600 text-sm font-medium">{stock.amountInput.toLocaleString()}원</td>
-                      <td className="px-6 py-4 text-right font-black text-gray-400 group-hover:text-blue-600">{stock.ratio}%</td>
-                    </tr>
+                      <CurrentStock key={i} stockName={stockName} stock={stock}/>
                     )
                   })
                 }

@@ -6,10 +6,11 @@ import { eventBus } from '../modules/modules';
 import { Events } from '../modules/events';
 import ExcelUploadButton from './ExcelUploadButton';
 import { useAtomValue } from 'jotai';
-import { summaryOverviewAtom } from '../store/atoms';
+import { isOfflineAtom, summaryOverviewAtom } from '../store/atoms';
 
 export default function SummaryInfo() {
   const summary = useAtomValue(summaryOverviewAtom);
+  const isOffline = useAtomValue(isOfflineAtom);
 
   const onClickCurrecyRateBtn = () => {
     eventBus.emit(Events.SHOW_RATE_MODAL);
@@ -19,9 +20,25 @@ export default function SummaryInfo() {
     <>
       <div className="flex justify-between items-end">
         <div>
-          <Typography variant="h4" className="font-extrabold text-gray-900 tracking-tight">
-            Stock Log
-          </Typography>
+          <div className="flex items-center gap-3">
+            <Typography variant="h4" className="font-extrabold text-gray-900 tracking-tight">
+              Stock Log
+            </Typography>
+            
+            {/* 서버 상태 표시 배지 */}
+            <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border ${
+              isOffline 
+                ? "bg-gray-50 border-gray-200 text-gray-500" 
+                : "bg-green-50 border-green-100 text-green-700"
+            }`}>
+              <span className={`w-2 h-2 rounded-full ${
+                isOffline ? "bg-gray-400" : "bg-green-500 animate-pulse"
+              }`} />
+              <span className="text-xs font-bold uppercase tracking-wider">
+                {isOffline ? "Offline" : "Live"}
+              </span>
+            </div>
+          </div>
           <Typography className="text-gray-500 mt-1">매매 내역 및 자산 분석</Typography>
         </div>
         <div className='flex gap-2'>

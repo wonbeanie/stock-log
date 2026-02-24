@@ -1,4 +1,4 @@
-import { CurrentStock, PastSale, StocksData } from "../store/atoms";
+import { CurrentStocks, PastSale, StocksData } from "../store/atoms";
 
 export const processExcelData = (excelData : excelData[], exchangeRate = 1450) => {
   const result: StockHistory[] = [];
@@ -43,7 +43,7 @@ const formatStocks = (data : StockHistory[], exchangeRate = 1450) : StocksData =
   let dividend = 0;
   let realizedProfit = 0;
   
-  let currentStocks : {[name : string] : CurrentStock} = {};
+  let currentStocks : CurrentStocks = {};
   let pastSales : PastSale[] = [];
   let currentNames = new Set();
   
@@ -72,16 +72,21 @@ const formatStocks = (data : StockHistory[], exchangeRate = 1450) : StocksData =
       });
       if(!currentNames.has(history["종목명"])){
         currentNames.add(history["종목명"]);
+
+        const country = history["종목코드"].slice(0,2) === "US" ? "US" : "KR";
+
         currentStocks[history["종목명"]] = {
           name : history["종목명"],
           ticker : history["종목코드"],
           dateOfPossession : calDateOfPossession(history["거래일자"]),
           amountInput : tradedPrice,
-          ratio : 0
+          amount : history["수량"],
+          country
         }
       }
       else {
         currentStocks[history["종목명"]].amountInput += tradedPrice;
+        currentStocks[history["종목명"]].amount += history["수량"];
       }
     }
 
@@ -116,19 +121,6 @@ const formatStocks = (data : StockHistory[], exchangeRate = 1450) : StocksData =
       });
     }
   })
-
-  currentStocks = Object.fromEntries(
-    Object.entries(currentStocks).map(([key, value])=>{
-      const ratio = Math.round(
-        ((value.amountInput / currentInvestment) * 100) * 100
-      ) / 100;
-      
-      return [key, {
-        ...value,
-        ratio
-      }]
-    })
-  );
 
   realizedProfit = totalInvestment !== 0 ?
                    (realizedProfit / totalInvestment) * 100 :

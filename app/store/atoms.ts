@@ -17,6 +17,8 @@ export const lastHashAtom = atomWithStorage<string>("LAST_HASH", '', undefined, 
 
 export const exchangeRateAtom = atomWithStorage<number>("EXCHANGE_RATE", 1450 , undefined, { getOnInit: true });
 
+export const isOfflineAtom = atom<boolean>(true);
+
 export const totalInvestmentAtom = atom((get) => get(stocksDataAtom).totalInvestment);
 export const currentInvestmentAtom = atom((get) => get(stocksDataAtom).currentInvestment);
 export const realizedProfitAtom = atom((get) => get(stocksDataAtom).realizedProfit);
@@ -24,6 +26,8 @@ export const dividendAtom = atom((get) => get(stocksDataAtom).dividend);
 
 export const currentStocksAtom = atom((get) => get(stocksDataAtom).currentStocks);
 export const pastSalesAtom = atom((get) => get(stocksDataAtom).pastSales);
+
+export const currentStocksReturnRateAtom = atom<{[name : string] : number}>({});
 
 export const stockDashboardAtom = atom((get)=>({
   currentStocks : get(currentStocksAtom),
@@ -63,21 +67,27 @@ export const updateStocksDataAtom = atom(
     set(lastHashAtom, newHash)
   }
 )
+
 export interface StocksData {
   totalInvestment : number;
   currentInvestment : number;
   realizedProfit : number;
   dividend : number;
-  currentStocks : {[name : string] : CurrentStock};
+  currentStocks : CurrentStocks;
   pastSales : PastSale[];
 }
+
+export type CurrentStocks = {
+  [name : string] : CurrentStock
+};
 
 export interface CurrentStock {
   name : string;
   ticker : string;
   dateOfPossession : number;
   amountInput : number;
-  ratio : number;
+  amount : number;
+  country: string;
 }
 
 export interface PastSale {
