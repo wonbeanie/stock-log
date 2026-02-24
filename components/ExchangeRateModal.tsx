@@ -14,8 +14,8 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
-import { eventBus } from '../modules/modules';
-import { Events } from '../modules/events';
+import { eventBus } from '../lib/modules';
+import { Events } from '../lib/events';
 import { exchangeRateAtom, updateExchangeRatioAtom } from '../store/atoms';
 import { useAtomValue, useSetAtom } from 'jotai';
 

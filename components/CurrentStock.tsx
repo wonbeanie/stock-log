@@ -1,7 +1,7 @@
 'use client'
 
-import { eventBus } from '../modules/modules';
-import { Events } from '../modules/events';
+import { eventBus } from '../lib/modules';
+import { Events } from '../lib/events';
 import { Chip } from '@mui/material';
 import type { CurrentStock } from '../store/atoms'
 import ReturnRatio from './ReturnRatio';

@@ -4,7 +4,7 @@ import React, { useRef } from 'react';
 import { Button } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import * as XLSX from 'xlsx';
-import { excelData } from '../modules/utils';
+import { excelData } from '../lib/utils';
 import { useSetAtom } from 'jotai';
 import { updateStocksDataAtom } from '../store/atoms';
 

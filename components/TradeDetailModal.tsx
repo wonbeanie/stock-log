@@ -11,8 +11,8 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import HistoryIcon from '@mui/icons-material/History';
-import { eventBus } from '../modules/modules';
-import { Events } from '../modules/events';
+import { eventBus } from '../lib/modules';
+import { Events } from '../lib/events';
 import { useAtom } from 'jotai';
 import { pastSalesAtom } from '../store/atoms';
 import { useAtomCallback } from 'jotai/utils';
