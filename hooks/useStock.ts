@@ -116,7 +116,7 @@ export const useStocksPriceData = () => {
   const pricesQuery = useQuery({
     queryKey : ["stocksPrice", stocks],
     queryFn : () => request(ENDPOINT, GET_STOCKS, {stocks}),
-    enabled: !isOffLine && !!stocks && !!updateTime,
+    enabled: !isOffLine && !!stocks && !!updateTime && !!tickersQuery.data,
     refetchInterval: 1000 * 60 * 10,
   });
 
