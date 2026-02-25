@@ -122,8 +122,8 @@ const formatStocks = (data : StockHistory[], exchangeRate = 1450) : StocksData =
     }
   })
 
-  realizedProfit = totalInvestment !== 0 ?
-                   (realizedProfit / totalInvestment) * 100 :
+  realizedProfit = totalInvestment - currentInvestment > 0 ?
+                   (realizedProfit / (totalInvestment - currentInvestment)) * 100 :
                    0
 
   pastSales.sort(dateSort("desc"));
