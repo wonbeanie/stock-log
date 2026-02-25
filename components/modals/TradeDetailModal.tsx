@@ -14,7 +14,7 @@ import HistoryIcon from '@mui/icons-material/History';
 import { pastSalesAtom } from '../../store/atoms';
 import { useAtomCallback } from 'jotai/utils';
 
-export default function TradeDetailModal({open, onClose, stockName} : Props) {
+export default function TradeDetailModal({open, onClose, stockInfo} : Props) {
   const [tradeHistory, setTradeHistory] = useState<TradeRecord[]>([]);
 
   useEffect(()=>{
@@ -22,7 +22,7 @@ export default function TradeDetailModal({open, onClose, stockName} : Props) {
   },[]);
 
   const updateHistory = async () => {
-    const tradeHistory = getTradeHistory(stockName);
+    const tradeHistory = getTradeHistory(stockInfo.name);
     setTradeHistory(tradeHistory);
   }
 
@@ -54,8 +54,13 @@ export default function TradeDetailModal({open, onClose, stockName} : Props) {
     >
       <DialogTitle className="flex justify-between items-start pt-6">
         <Box>
-          <div className="flex items-center gap-2 mb-1">
-            <Typography variant="h5" className="font-black text-gray-900">{stockName}</Typography>
+          <div className="flex items-center">
+            <Typography variant="h5" className="font-black text-gray-900">{stockInfo.name}</Typography>
+          </div>
+          <div className="flex items-center mb-1">
+            <Typography variant="caption" className="text-gray-300 font-normal">
+              {stockInfo.ticker}
+            </Typography>
           </div>
           <Typography variant="caption" className="text-blue-600 font-bold flex items-center gap-1">
             <HistoryIcon sx={{ fontSize: 14 }} /> 전체 매매 히스토리
@@ -100,7 +105,10 @@ export default function TradeDetailModal({open, onClose, stockName} : Props) {
 interface Props {
   open: boolean;
   onClose: () => void;
-  stockName : string;
+  stockInfo : {
+    name : string;
+    ticker : string;
+  };
 }
 
 interface TradeRecord {
