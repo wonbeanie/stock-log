@@ -1,6 +1,6 @@
 import ReactECharts from 'echarts-for-react';
 import { useAtomValue } from 'jotai';
-import { stockDashboardAtom } from '../store/atoms';
+import { stockDashboardAtom } from '@/store/atoms';
 import { useEffect, useState } from 'react';
 import { Card, Typography } from '@mui/material';
 

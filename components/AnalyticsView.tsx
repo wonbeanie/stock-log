@@ -1,6 +1,6 @@
 import { Grid } from '@mui/material'
-import StockProportionPieChart from './StockProportionPieChart'
-import RateOfReturnBarChart from './RateOfReturnBarChart'
+import StockProportionPieChart from './charts/StockProportionPieChart'
+import RateOfReturnBarChart from './charts/RateOfReturnBarChart'
 
 export default function AnalyticsView() {
 

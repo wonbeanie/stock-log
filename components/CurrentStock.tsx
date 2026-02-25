@@ -3,7 +3,7 @@
 import { Chip } from '@mui/material';
 import type { CurrentStock } from '../store/atoms'
 import ReturnRatio from './ReturnRatio';
-import TradeDetailModal from './TradeDetailModal';
+import TradeDetailModal from './modals/TradeDetailModal';
 import { useState } from 'react';
 
 export default function CurrentStock({stockName, stock} : {stockName : string, stock : CurrentStock}) {

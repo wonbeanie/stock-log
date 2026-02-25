@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import HistoryIcon from '@mui/icons-material/History';
-import { pastSalesAtom } from '../store/atoms';
+import { pastSalesAtom } from '../../store/atoms';
 import { useAtomCallback } from 'jotai/utils';
 
 export default function TradeDetailModal({open, onClose, stockName} : Props) {

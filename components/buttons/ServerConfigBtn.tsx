@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import StorageIcon from '@mui/icons-material/Storage';
 import { Button } from '@mui/material';
-import ServerConfigModal from './ServerConfigModal';
+import ServerConfigModal from '../modals/ServerConfigModal';
 
 export default function ServerConfigBtn() {
   const [open, setOpen] = useState(false);

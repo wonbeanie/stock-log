@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
-import { exchangeRateAtom, updateExchangeRatioAtom } from '../store/atoms';
+import { exchangeRateAtom, updateExchangeRatioAtom } from '../../store/atoms';
 import { useAtomValue, useSetAtom } from 'jotai';
 
 export default function ExchangeRateModal({open, onClose} : Props) {

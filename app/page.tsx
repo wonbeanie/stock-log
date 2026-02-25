@@ -1,7 +1,7 @@
 import SummaryInfo from '../components/SummaryInfo';
 import MainContents from '../components/MainContents';
-import ExchangeRateModal from '../components/ExchangeRateModal';
-import TradeDetailModal from '../components/TradeDetailModal';
+import ExchangeRateModal from '../components/modals/ExchangeRateModal';
+import TradeDetailModal from '../components/modals/TradeDetailModal';
 
 export default function Home() {
   return (

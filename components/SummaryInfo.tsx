@@ -1,11 +1,11 @@
 'use client'
 
 import { Card, Grid, Typography } from '@mui/material'
-import ExcelUploadButton from './ExcelUploadButton';
+import ExcelUploadButton from './buttons/ExcelUploadButton';
 import { useAtomValue } from 'jotai';
 import { isOfflineAtom, summaryOverviewAtom } from '../store/atoms';
-import ServerConfigBtn from './ServerConfigBtn';
-import ExchangeRateBtn from './ExchangeRateBtn';
+import ServerConfigBtn from './buttons/ServerConfigBtn';
+import ExchangeRateBtn from './buttons/ExchangeRateBtn';
 
 export default function SummaryInfo() {
   const summary = useAtomValue(summaryOverviewAtom);

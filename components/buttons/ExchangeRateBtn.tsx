@@ -3,7 +3,7 @@
 import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
 import { Button } from '@mui/material';
 import { useState } from 'react';
-import ExchangeRateModal from './ExchangeRateModal';
+import ExchangeRateModal from '../modals/ExchangeRateModal';
 
 export default function ExchangeRateBtn() {
   const [open, setOpen] = useState(false);
