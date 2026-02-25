@@ -2,16 +2,70 @@
 
 import { Card, Chip, Grid, Typography } from '@mui/material'
 import { useAtomValue } from 'jotai';
-import { stockDashboardAtom, stocksLoadingAtom, stocksPriceAtom } from '../store/atoms';
+import { CurrentStock as CurrentStockType, exchangeRateAtom, stockDashboardAtom, stocksLoadingAtom, stocksPriceAtom } from '../store/atoms';
 import CurrentStock from './CurrentStock';
-import { formatDate } from '@/lib/modules';
+import { formatDate, formatReturnRate } from '@/lib/modules';
+import { useState } from 'react';
 
 export default function StockDashboard() {
   const {currentStocks, pastSales} = useAtomValue(stockDashboardAtom);
   const {updateDate} = useAtomValue(stocksPriceAtom);
   const {stocksPrice} = useAtomValue(stocksPriceAtom);
   const stocksLoading = useAtomValue(stocksLoadingAtom);
-  
+  const [sortType, setSortType] = useState<string>("stockName");
+  const [orderType, setOrderType] = useState<string>("ASC");
+  const exchangeRate = useAtomValue(exchangeRateAtom);
+
+  const onHandlerSort = (type : string) => {
+    return (e : React.MouseEvent<HTMLTableCellElement>) => {
+      e.preventDefault();
+      if(sortType === type){
+          orderType === "ASC" ? setOrderType("DESC") : setOrderType("ASC");
+          return;
+      }
+      setSortType(type);
+    }
+  }
+
+  const sorting = ([aName, aStock] : [string, CurrentStockType], [bName, bStock] : [string, CurrentStockType]) => {
+    if(sortType === "stockName"){
+      if(orderType === "DESC"){
+        return bName.localeCompare(aName);
+      }
+      return aName.localeCompare(bName);
+    }
+    if(sortType === "dateOfPossession"){
+      if(orderType === "DESC"){
+        return bStock.dateOfPossession - aStock.dateOfPossession;
+      }
+      return aStock.dateOfPossession - bStock.dateOfPossession;
+    }
+    if(sortType === "amountInput"){
+      if(orderType === "DESC"){
+        return bStock.amountInput - aStock.amountInput;
+      }
+      return aStock.amountInput - bStock.amountInput;
+    }
+    if(sortType === "returnRate"){
+      const aReturnRate = formatReturnRate(aStock, stocksPrice, exchangeRate);
+      const bReturnRate = formatReturnRate(bStock, stocksPrice, exchangeRate);
+
+      if(aReturnRate === "NO DATA"){
+        return 1;
+      }
+      if(bReturnRate === "NO DATA"){
+        return -1;
+      }
+
+      if(orderType === "DESC"){
+        return bReturnRate - aReturnRate;
+      }
+      return aReturnRate - bReturnRate;
+    }
+
+    return 0;
+  }
+
   return (
     <Grid container spacing={4} className="animate-in fade-in slide-in-from-bottom-4 duration-700">
       <Grid size={{ xs: 12, md: 7 }}>
@@ -24,19 +78,20 @@ export default function StockDashboard() {
             <table className="w-full text-left">
               <thead className="sticky top-0 bg-white/80 backdrop-blur-md z-20">
                 <tr className="text-gray-400 text-[11px] font-bold uppercase tracking-widest border-b border-gray-50">
-                  <th className="px-6 py-4">종목명</th>
-                  <th className="px-6 py-4 text-center">보유일</th>
-                  <th className="px-6 py-4 text-center">투입 금액</th>
+                  <th className="px-6 py-4 cursor-pointer" onClick={onHandlerSort("stockName")}>종목명</th>
+                  <th className="px-6 py-4 text-center cursor-pointer" onClick={onHandlerSort("dateOfPossession")}>보유일</th>
+                  <th className="px-6 py-4 text-center cursor-pointer" onClick={onHandlerSort("amountInput")}>투입 금액</th>
                   {
-                    !(Object.keys(stocksPrice).length === 0 && !stocksLoading) && <th className="px-6 py-4 text-center">수익률</th>
+                    !(Object.keys(stocksPrice).length === 0 && !stocksLoading) &&
+                    <th className="px-6 py-4 text-center cursor-pointer" onClick={onHandlerSort("returnRate")}>수익률</th>
                   }
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
                 {
-                  Object.entries(currentStocks).map(([stockName, stock], i) => {
+                  Object.entries(currentStocks).sort(sorting).map(([stockName, stock], i) => {
                     return (
-                      <CurrentStock key={i} stockName={stockName} stock={stock}/>
+                      <CurrentStock key={stockName} stockName={stockName} stock={stock}/>
                     )
                   })
                 }

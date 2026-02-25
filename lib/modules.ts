@@ -1,3 +1,5 @@
+import { CurrentStock, StocksPrice } from "@/store/atoms";
+
 export const formatDate = (timestamp : number = new Date().getTime()) => {
   if(timestamp === 0){
     return `NO UPDATED`;
@@ -19,4 +21,22 @@ export const formatDate = (timestamp : number = new Date().getTime()) => {
 
 
   return `${year}-${formatMonth}-${formatDay} ${formatHours}:${formatMinutes}:${formatSeconds}`;
+}
+
+export const formatReturnRate = (stock : CurrentStock, stocksPrice : StocksPrice, exchangeRate = 1450) => {
+  const price = stocksPrice[stock.ticker];
+
+  let valueAmount = price ? price * stock.amount : 0;
+
+  if(valueAmount <= 0){
+    return "NO DATA";
+  }
+
+  if(stock.country === "US"){
+    valueAmount *= exchangeRate;
+  }
+
+  const result = (valueAmount / stock.amountInput) * 100 - 100;
+
+  return result;
 }

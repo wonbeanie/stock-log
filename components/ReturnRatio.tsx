@@ -1,5 +1,6 @@
 'use client'
 
+import { formatReturnRate } from '@/lib/modules';
 import { CurrentStock, exchangeRateAtom, isOfflineAtom, stocksLoadingAtom, stocksPriceAtom } from '../store/atoms';
 import { useAtomValue } from 'jotai';
 
@@ -12,21 +13,8 @@ export default function ReturnRatio({stock} : {stock : CurrentStock}) {
     if(stocksLoading){
       return "...Loading";
     }
-    const price = stocksPrice[stock.ticker];
 
-    let valueAmount = price ? price * stock.amount : 0;
-
-    if(valueAmount <= 0){
-      return "NO DATA";
-    }
-
-    if(stock.country === "US"){
-      valueAmount *= exchangeRate;
-    }
-
-    const result = (valueAmount / stock.amountInput) * 100 - 100;
-
-    return `${result.toLocaleString()}%`;
+    return `${formatReturnRate(stock, stocksPrice, exchangeRate).toLocaleString()}%`;
   }
 
   if (Object.keys(stocksPrice).length === 0 && !stocksLoading) return <></>;
