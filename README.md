@@ -1,36 +1,46 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# STOCK-LOG
+### 주식 내역을 깔끔하게 보기 위한 프로젝트
+- UI Style은 GEMINI를 이용하여 적용하였습니다.
+- 나무 증권의 종합거래내역(상세)을 기준으로 작성하였습니다.
+- 과거 환율로 계산되는 것이 아닌 설정한 환율을 기준으로 모든 가격이 계산되기 때문에 오차가 있습니다.
 
-## Getting Started
+## 주요 사용 라이브러리
+- graphql
+- mui
+- tanstack
+- echarts
+- jotai
+- next
+- xlsx
 
-First, run the development server:
-
+## 의존성 설치
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 사용방법
+1. '엑셀 데이터 불러오기'을 통해 종합거래내역을 불러옵니다. (다중 선택 가능합니다.)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 주요 기능 설명
+- 요약 정보
+  - 총 투자 금액
+    - 과거부터 현재까지 투입한 총금액입니다.
+  - 현재 투자 금액
+    - 현재 보유 중인 종목에 투입한 총금액입니다.
+- 종합 대시보드
+  - 현재 보유 종목
+    - 종목을 클릭 시 '전체 매매 히스토리'를 볼 수 있습니다.
+- 서버 설정
+  - 현재가를 불러오기 위한 서버 설정입니다.
+- 엑셀 데이터 불러오기
+  - 다중 선택이 가능합니다.
+- 환율 설정
+  - 달러를 계산할 때 필요한 환율을 설정합니다.
+  - 과거에 달러를 이용하여 매매한 것은 설정한 값으로 적용하게 됩니다.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 서버를 이용한 현재가 가져오기
+- 현재가는 "야후 파이낸스"를 이용하여 가져오고 있습니다.
+1. [STOCK-LOG-SERVER](https://github.com/wonbeanie/stock-log-server.git)을 클론 하여 서버를 실행합니다.
+2. 정상적으로 연결이 됐다면 왼쪽 상단의 'OFFLINE'이 'ONLINE'으로 변경되며 현재가를 불러오게 됩니다.
+3. 현재가는 '현재 보유 종목'만 표시되며 업데이트 주기는 10분입니다.
+4. 현재가 정보가 업데이트된 이후 서버가 종료되어 있더라도 데이터는 저장되어 표시됩니다.
