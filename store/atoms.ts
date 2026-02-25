@@ -17,6 +17,8 @@ export const lastHashAtom = atomWithStorage<string>("LAST_HASH", '', undefined, 
 
 export const exchangeRateAtom = atomWithStorage<number>("EXCHANGE_RATE", 1450 , undefined, { getOnInit: true });
 
+export const serverUrlAtom = atomWithStorage<string>("SERVER_URL", "http://localhost:4000", undefined, { getOnInit: true });
+
 export const isOfflineAtom = atom<boolean>(true);
 
 export const totalInvestmentAtom = atom((get) => get(stocksDataAtom).totalInvestment);

@@ -14,40 +14,19 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
-import { eventBus } from '../lib/modules';
-import { Events } from '../lib/events';
 import { exchangeRateAtom, updateExchangeRatioAtom } from '../store/atoms';
 import { useAtomValue, useSetAtom } from 'jotai';
 
-export default function ExchangeRateModal() {
+export default function ExchangeRateModal({open, onClose} : Props) {
   const exchangeRate = useAtomValue(exchangeRateAtom);
   const [rate, setRate] = useState<number>(exchangeRate);
   const [blurCheck, setBlurCheck] = useState<boolean>(true);
-  const [open, setOpen] = useState<boolean>(false);
   const updateExchangeRatio = useSetAtom(updateExchangeRatioAtom);
-
-  useEffect(()=>{
-    eventBus.on(Events.SHOW_RATE_MODAL, onOpen);
-    eventBus.on(Events.HIDE_RATE_MODAL, onClose);
-
-    return () => {
-      eventBus.off(Events.SHOW_RATE_MODAL, onOpen);
-      eventBus.off(Events.HIDE_RATE_MODAL, onClose);
-    }
-  }, []);
 
   const handleSave = async () => {
     updateExchangeRatio(rate);
     onClose();
   };
-
-  const onOpen = async () => {
-    setOpen(true);
-  }
-
-  const onClose = () => {
-    setOpen(false);
-  }
 
   const handleRateChange = (e : React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/[^\d]/g, "");
@@ -119,4 +98,9 @@ export default function ExchangeRateModal() {
       </DialogActions>
     </Dialog>
   );
+}
+
+interface Props {
+  open: boolean;
+  onClose: () => void;
 }

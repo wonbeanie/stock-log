@@ -11,39 +11,19 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import HistoryIcon from '@mui/icons-material/History';
-import { eventBus } from '../lib/modules';
-import { Events } from '../lib/events';
-import { useAtom } from 'jotai';
 import { pastSalesAtom } from '../store/atoms';
 import { useAtomCallback } from 'jotai/utils';
 
-interface TradeRecord {
-  date: string;
-  type: string;
-  price: number;
-  amount: number;
-}
-
-export default function TradeDetailModal() {
-  const [open, setOpen] = useState<boolean>(false);
-  const [stockName, setStockName] = useState<string>('Apple Inc.');;
+export default function TradeDetailModal({open, onClose, stockName} : Props) {
   const [tradeHistory, setTradeHistory] = useState<TradeRecord[]>([]);
 
   useEffect(()=>{
-    eventBus.on(Events.SHOW_DETAIL_MODAL, onOpen);
-    eventBus.on(Events.HIDE_DETAIL_MODAL, onClose);
+    updateHistory();
+  },[]);
 
-    return () => {
-      eventBus.off(Events.SHOW_DETAIL_MODAL, onOpen);
-      eventBus.off(Events.HIDE_DETAIL_MODAL, onClose);
-    }
-  }, []);
-
-  const onOpen = async (stockName : string) => {
-    const tradeHistory = await getTradeHistory(stockName);
-    setStockName(stockName);
+  const updateHistory = async () => {
+    const tradeHistory = getTradeHistory(stockName);
     setTradeHistory(tradeHistory);
-    setOpen(true);
   }
 
   const getTradeHistory = useAtomCallback(
@@ -59,10 +39,6 @@ export default function TradeDetailModal() {
       });
     }
   )
-
-  const onClose = () => {
-    setOpen(false);
-  }
 
   return (
     <Dialog 
@@ -119,4 +95,17 @@ export default function TradeDetailModal() {
       </DialogContent>
     </Dialog>
   );
+}
+
+interface Props {
+  open: boolean;
+  onClose: () => void;
+  stockName : string;
+}
+
+interface TradeRecord {
+  date: string;
+  type: string;
+  price: number;
+  amount: number;
 }

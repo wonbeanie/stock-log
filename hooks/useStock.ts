@@ -1,10 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { request, gql } from 'graphql-request';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
-import { isOfflineAtom, stockDashboardAtom, stocksLoadingAtom, StocksPrice, stocksPriceAtom } from '../store/atoms';
+import { isOfflineAtom, serverUrlAtom, stockDashboardAtom, stocksLoadingAtom, StocksPrice, stocksPriceAtom } from '../store/atoms';
 import { useEffect } from 'react';
-
-const ENDPOINT = "http://localhost:4000/"
 
 // 1. ISIN으로 Ticker를 찾는 쿼리 (미국 전용)
 const GET_TICKER = gql`
@@ -26,11 +24,13 @@ const GET_PRICE = gql`
 
 export function useUnifiedStockData(data: string, market: string) {
   const isOffLine = useAtomValue(isOfflineAtom);
+  const serverUrl = useAtomValue(serverUrlAtom);
+
   const isUS = market === 'US';
 
   const tickerQuery = useQuery({
     queryKey: ['ticker', data],
-    queryFn: () => request(ENDPOINT, GET_TICKER, { isin: data }),
+    queryFn: () => request(serverUrl, GET_TICKER, { isin: data }),
     enabled: !!data && isUS && !isOffLine,
   });
 
@@ -38,7 +38,7 @@ export function useUnifiedStockData(data: string, market: string) {
 
   const priceQuery = useQuery({
     queryKey: ['price', finalTicker, market],
-    queryFn: () => request(ENDPOINT, GET_PRICE, { 
+    queryFn: () => request(serverUrl, GET_PRICE, { 
       ticker: finalTicker, 
       market: market 
     }),
@@ -79,6 +79,7 @@ export const useStocksPriceData = () => {
   const {currentStocks} = useAtomValue(stockDashboardAtom);
   const [{updateDate}, setStocksPrice] = useAtom(stocksPriceAtom);
   const setStocksLoading = useSetAtom(stocksLoadingAtom);
+  const serverUrl = useAtomValue(serverUrlAtom);
 
   const updateTime = updateDate <= new Date().getTime() - (1000 * 60 * 10);
 
@@ -90,7 +91,7 @@ export const useStocksPriceData = () => {
 
   const tickersQuery = useQuery({
     queryKey : ["tickers", isinList],
-    queryFn : () => request(ENDPOINT, GET_TICKERS, {isinList}),
+    queryFn : () => request(serverUrl, GET_TICKERS, {isinList}),
     enabled: !isOffLine && !!isinList && !!updateTime
   });
 
@@ -116,7 +117,7 @@ export const useStocksPriceData = () => {
 
   const pricesQuery = useQuery({
     queryKey : ["stocksPrice", stocks],
-    queryFn : () => request(ENDPOINT, GET_STOCKS, {stocks}),
+    queryFn : () => request(serverUrl, GET_STOCKS, {stocks}),
     enabled: !isOffLine && !!stocks && !!updateTime && !!tickersQuery.data,
     refetchInterval: 1000 * 60 * 10,
   });
@@ -168,10 +169,11 @@ const PING_QUERY = gql`
 
 export function useServerCheck(){
   const setIsOffLine = useSetAtom(isOfflineAtom);
+  const serverUrl = useAtomValue(serverUrlAtom);
 
   const query = useQuery({
     queryKey : ['serverStatus'],
-    queryFn: () => request('http://localhost:4000/', PING_QUERY),
+    queryFn: () => request(serverUrl, PING_QUERY),
     retry: 1,
     staleTime: 1000 * 60 * 5
   });

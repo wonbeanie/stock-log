@@ -11,9 +11,6 @@ export default function Home() {
 
         <MainContents />
       </div>
-
-      <ExchangeRateModal />
-      <TradeDetailModal />
     </main>
   );
 }

@@ -1,20 +1,15 @@
 'use client'
 
-import { Button, Card, Grid, Typography } from '@mui/material'
-import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
-import { eventBus } from '../lib/modules';
-import { Events } from '../lib/events';
+import { Card, Grid, Typography } from '@mui/material'
 import ExcelUploadButton from './ExcelUploadButton';
 import { useAtomValue } from 'jotai';
 import { isOfflineAtom, summaryOverviewAtom } from '../store/atoms';
+import ServerConfigBtn from './ServerConfigBtn';
+import ExchangeRateBtn from './ExchangeRateBtn';
 
 export default function SummaryInfo() {
   const summary = useAtomValue(summaryOverviewAtom);
   const isOffline = useAtomValue(isOfflineAtom);
-
-  const onClickCurrecyRateBtn = () => {
-    eventBus.emit(Events.SHOW_RATE_MODAL);
-  }
 
   return (
     <>
@@ -42,15 +37,9 @@ export default function SummaryInfo() {
           <Typography className="text-gray-500 mt-1">매매 내역 및 자산 분석</Typography>
         </div>
         <div className='flex gap-2'>
+          <ServerConfigBtn />
           <ExcelUploadButton />
-          <Button 
-            variant="contained" 
-            startIcon={<CurrencyExchangeIcon />}
-            onClick={onClickCurrecyRateBtn}
-            className="bg-white text-gray-700 shadow-sm border border-gray-200 hover:bg-gray-50 normal-case px-6 py-2 rounded-xl"
-          >
-            환율 설정
-          </Button>
+          <ExchangeRateBtn />
         </div>
       </div>
 
