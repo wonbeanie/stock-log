@@ -34,6 +34,8 @@ export const stockDashboardAtom = atom((get)=>({
   pastSales : get(pastSalesAtom)
 }))
 
+export const stocksLoadingAtom = atom(false);
+
 export const stocksPriceAtom = atomWithStorage<{
   stocksPrice : StocksPrice;
   updateDate : number;

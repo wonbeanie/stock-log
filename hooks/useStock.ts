@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { request, gql } from 'graphql-request';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
-import { isOfflineAtom, stockDashboardAtom, StocksPrice, stocksPriceAtom } from '../store/atoms';
+import { isOfflineAtom, stockDashboardAtom, stocksLoadingAtom, StocksPrice, stocksPriceAtom } from '../store/atoms';
 import { useEffect } from 'react';
 
 const ENDPOINT = "http://localhost:4000/"
@@ -78,6 +78,7 @@ export const useStocksPriceData = () => {
   const isOffLine = useAtomValue(isOfflineAtom);
   const {currentStocks} = useAtomValue(stockDashboardAtom);
   const [{updateDate}, setStocksPrice] = useAtom(stocksPriceAtom);
+  const setStocksLoading = useSetAtom(stocksLoadingAtom);
 
   const updateTime = updateDate <= new Date().getTime() - (1000 * 60 * 10);
 
@@ -128,6 +129,15 @@ export const useStocksPriceData = () => {
     const ticker = usTickers[stock.symbol] || stock.symbol;
     formatStocksPrice[ticker] = stock.price;
   });
+
+  useEffect(()=>{
+    if(!tickersQuery.isLoading && !pricesQuery.isLoading){
+      setStocksLoading(false);
+    }
+    else {
+      setStocksLoading(true);
+    }
+  }, [tickersQuery.isLoading, pricesQuery.isLoading, setStocksLoading]);
 
   useEffect(() => {
     if(pricesQuery.isSuccess){

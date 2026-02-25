@@ -2,14 +2,15 @@
 
 import { Card, Chip, Grid, Typography } from '@mui/material'
 import { useAtomValue } from 'jotai';
-import { isOfflineAtom, stockDashboardAtom, stocksPriceAtom } from '../store/atoms';
+import { stockDashboardAtom, stocksLoadingAtom, stocksPriceAtom } from '../store/atoms';
 import CurrentStock from './CurrentStock';
 import { formatDate } from '@/lib/modules';
 
 export default function StockDashboard() {
   const {currentStocks, pastSales} = useAtomValue(stockDashboardAtom);
-  const isOffline = useAtomValue(isOfflineAtom);
   const {updateDate} = useAtomValue(stocksPriceAtom);
+  const {stocksPrice} = useAtomValue(stocksPriceAtom);
+  const stocksLoading = useAtomValue(stocksLoadingAtom);
   
   return (
     <Grid container spacing={4} className="animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -27,7 +28,7 @@ export default function StockDashboard() {
                   <th className="px-6 py-4 text-center">보유일</th>
                   <th className="px-6 py-4 text-center">투입 금액</th>
                   {
-                    !isOffline && <th className="px-6 py-4 text-center">수익률</th>
+                    !(Object.keys(stocksPrice).length === 0 && !stocksLoading) && <th className="px-6 py-4 text-center">수익률</th>
                   }
                 </tr>
               </thead>

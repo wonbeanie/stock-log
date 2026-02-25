@@ -24,6 +24,10 @@ class EventBus {
 export const eventBus = new EventBus();
 
 export const formatDate = (timestamp : number = new Date().getTime()) => {
+  if(timestamp === 0){
+    return `NO UPDATED`;
+  }
+
   const date = new Date(timestamp);
   const year = date.getFullYear();
   const month = date.getMonth() + 1;
