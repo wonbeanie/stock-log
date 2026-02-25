@@ -1,16 +1,17 @@
 'use client'
 
-import { CurrentStock, exchangeRateAtom, isOfflineAtom } from '../store/atoms';
-import { useUnifiedStockData } from '../hooks/useStock';
+import { CurrentStock, exchangeRateAtom, isOfflineAtom, stocksPriceAtom } from '../store/atoms';
 import { useAtomValue } from 'jotai';
 
 export default function ReturnRatio({stock} : {stock : CurrentStock}) {
   const isOffline = useAtomValue(isOfflineAtom);
   const exchangeRate = useAtomValue(exchangeRateAtom);
-  const { isError, isLoading, price, ticker } = useUnifiedStockData(stock.ticker, stock.country);
+  const {stocksPrice} = useAtomValue(stocksPriceAtom);
 
   const getReturnRate = () => {
-    let valueAmount = price ? price.price * stock.amount : 0;
+    const price = stocksPrice[stock.ticker];
+
+    let valueAmount = price ? price * stock.amount : 0;
 
     if(valueAmount <= 0){
       return "NO DATA";
@@ -23,7 +24,7 @@ export default function ReturnRatio({stock} : {stock : CurrentStock}) {
     return (valueAmount / stock.amountInput) * 100 - 100;
   }
 
-  if (isOffline) return <></>;
+  if (Object.keys(stocksPrice).length === 0) return <></>;
 
   return <td className="px-6 py-4 text-center text-gray-600 text-sm font-medium">{getReturnRate().toLocaleString()}%</td>;
 }

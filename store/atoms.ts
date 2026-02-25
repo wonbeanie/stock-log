@@ -34,6 +34,14 @@ export const stockDashboardAtom = atom((get)=>({
   pastSales : get(pastSalesAtom)
 }))
 
+export const stocksPriceAtom = atomWithStorage<{
+  stocksPrice : StocksPrice;
+  updateDate : number;
+}>("STOCKS_PRICE", {
+  stocksPrice : {},
+  updateDate : 0
+} , undefined);
+
 export const summaryOverviewAtom = atom((get) => ({
   total: get(totalInvestmentAtom),
   current: get(currentInvestmentAtom),
@@ -96,4 +104,8 @@ export interface PastSale {
   date : string;
   profits : number;
   amount : number;
+}
+
+export interface StocksPrice {
+  [name: string] : number
 }

@@ -4,7 +4,7 @@ import { stockDashboardAtom } from '../store/atoms';
 import { useEffect, useState } from 'react';
 import { Card, Typography } from '@mui/material';
 
-export default function CurrentStocksPieChart() {
+export default function StockProportionPieChart() {
   const {currentStocks} = useAtomValue(stockDashboardAtom);
   const [currentStocksOption, setCurrentStocksOption] = useState({});
 

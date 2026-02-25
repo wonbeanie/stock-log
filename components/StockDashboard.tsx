@@ -1,20 +1,23 @@
 'use client'
 
-import { Card, Grid, Typography } from '@mui/material'
+import { Card, Chip, Grid, Typography } from '@mui/material'
 import { useAtomValue } from 'jotai';
-import { isOfflineAtom, stockDashboardAtom } from '../store/atoms';
+import { isOfflineAtom, stockDashboardAtom, stocksPriceAtom } from '../store/atoms';
 import CurrentStock from './CurrentStock';
+import { formatDate } from '@/lib/modules';
 
 export default function StockDashboard() {
   const {currentStocks, pastSales} = useAtomValue(stockDashboardAtom);
   const isOffline = useAtomValue(isOfflineAtom);
-
+  const {updateDate} = useAtomValue(stocksPriceAtom);
+  
   return (
     <Grid container spacing={4} className="animate-in fade-in slide-in-from-bottom-4 duration-700">
       <Grid size={{ xs: 12, md: 7 }}>
         <Card className="shadow-lg border border-gray-100 rounded-3xl flex flex-col h-[600px] overflow-hidden bg-white">
           <div className="p-6 flex justify-between items-center border-b border-gray-50">
             <Typography variant="h6" className="font-bold text-gray-800">현재 보유 종목</Typography>
+            <Chip label={`Last updated: ${formatDate(updateDate)}`} size="small" variant="outlined" className="text-gray-400 border-gray-200" />
           </div>
           <div className="flex-grow overflow-y-auto custom-scrollbar">
             <table className="w-full text-left">
