@@ -131,6 +131,9 @@ export const useStocksPriceData = () => {
 
   useEffect(() => {
     if(pricesQuery.isSuccess){
+      if(Object.keys(formatStocksPrice).length === 0){
+        return;
+      }
       setStocksPrice({
         stocksPrice : formatStocksPrice,
         updateDate : new Date().getTime()
