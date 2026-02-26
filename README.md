@@ -4,6 +4,24 @@
 - 나무 증권의 종합거래내역(상세)을 기준으로 작성하였습니다.
 - 과거 환율로 계산되는 것이 아닌 설정한 환율을 기준으로 모든 가격이 계산되기 때문에 오차가 있습니다.
 
+## 작동 사진
+<details>
+  <summary>작동 사진 보기</summary>
+  
+  ### 초기 메인화면
+  <img width="1241" height="937" alt="image" src="https://github.com/user-attachments/assets/a72e4ffe-fd7a-4bea-b481-c7cc9347100e" />
+  
+  ### 초기 차트화면
+  <img width="1245" height="819" alt="image" src="https://github.com/user-attachments/assets/5b41c911-8c46-4bef-917a-3a19efc105ac" />
+  
+  ### 메인화면 (가격 불러오기 이후)
+  <img width="1240" height="940" alt="image" src="https://github.com/user-attachments/assets/5e1a8016-f501-4508-8f64-27cc4173c0c7" />
+  
+  ### 차트화면 (가격 불러오기 이후)
+  <img width="1242" height="831" alt="image" src="https://github.com/user-attachments/assets/68f1fada-facb-4c50-a517-e984ed5b4a9d" />
+</details>
+
+
 ## 주요 사용 라이브러리
 - graphql
 - mui
