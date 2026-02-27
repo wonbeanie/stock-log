@@ -1,7 +1,7 @@
 import { GET_PRICE, GET_STOCKS, GET_TICKER, GET_TICKERS, PING_QUERY } from '@/lib/graphql';
 import { isOfflineAtom, serverUrlAtom, stocksLoadingAtom } from '@/store/baseAtoms';
 import { StocksPrice, stocksPriceAtom } from '@/store/price';
-import { stockDashboardAtom } from '@/store/stocks';
+import { CurrentStocks, stockDashboardAtom } from '@/store/stocks';
 import { useQuery } from '@tanstack/react-query';
 import { request, gql } from 'graphql-request';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
@@ -50,11 +50,7 @@ export const useStocksPriceData = () => {
 
   const isUpdateTime = updateDate <= new Date().getTime() - (1000 * 60 * 10);
 
-  const isinList = Object.values(currentStocks)
-  .filter((stock)=>stock.country !== "KR")
-  .map((stock)=>{
-    return stock.ticker;
-  });
+  const isinList = getIsinList(currentStocks);
 
   const tickersQuery = useQuery({
     queryKey : ["tickers", isinList],
@@ -64,39 +60,20 @@ export const useStocksPriceData = () => {
 
   const tickers = tickersQuery.data?.getTickers || [];
 
-  const usTickers : {[key: string] : string} = {};
+  const usTickers = getUSTickers(tickers);
 
-  tickers.forEach((ticker: { isin: string; ticker: string; })=>{
-    usTickers[ticker.isin] = ticker.ticker;
-    usTickers[ticker.ticker] = ticker.isin;
-  });
-
-  const stocks = Object.values(currentStocks).map((stock)=>{
-    const isUS = stock.country === "US";
-
-    const fianlTicker = isUS ? usTickers[stock.ticker] : stock.ticker;
-
-    return {
-      ticker: fianlTicker,
-      country: stock.country
-    }
-  });
+  const requestStocks = getRequestStocks(currentStocks, usTickers);
 
   const pricesQuery = useQuery({
-    queryKey : ["stocksPrice", stocks],
-    queryFn : () => request(serverUrl, GET_STOCKS, {stocks}),
-    enabled: !isOffLine && !!stocks && !!isUpdateTime && !!tickersQuery.data,
+    queryKey : ["stocksPrice", requestStocks],
+    queryFn : () => request(serverUrl, GET_STOCKS, {requestStocks}),
+    enabled: !isOffLine && !!requestStocks && !!isUpdateTime && !!tickersQuery.data,
     refetchInterval: 1000 * 60 * 10,
   });
 
-  const result = pricesQuery.data?.getStocks || [];
+  const result = (pricesQuery.data?.getStocks || []) as responsePrice[];
 
-  const formatStocksPrice : StocksPrice = {};
-
-  result.forEach((stock : {symbol : string, price : number})=>{
-    const ticker = usTickers[stock.symbol] || stock.symbol;
-    formatStocksPrice[ticker] = stock.price;
-  });
+  const formatStocksPrice = getStocksPrice(result, usTickers);
 
   useEffect(()=>{
     if(!tickersQuery.isLoading && !pricesQuery.isLoading){
@@ -127,3 +104,56 @@ export const useStocksPriceData = () => {
 
   return pricesQuery;
 }
+
+function getIsinList(currentStocks : CurrentStocks){
+  return Object.values(currentStocks)
+  .filter((stock)=>stock.country !== "KR")
+  .map((stock)=>{
+    return stock.ticker;
+  });
+}
+
+function getUSTickers(tickers : { isin: string; ticker: string; }[]){
+  let result : USTicker = {};
+  tickers.forEach((ticker: { isin: string; ticker: string; })=>{
+    if(ticker.isin === null || ticker.ticker === null){
+      return;
+    }
+    result[ticker.isin] = ticker.ticker;
+    result[ticker.ticker] = ticker.isin;
+  });
+
+  return result;
+}
+
+function getRequestStocks(currentStocks : CurrentStocks, usTickers : USTicker){
+  return Object.values(currentStocks).map((stock)=>{
+    const isUS = stock.country === "US";
+
+    const fianlTicker = isUS ? usTickers[stock.ticker] : stock.ticker;
+
+    return {
+      ticker: fianlTicker,
+      country: stock.country
+    }
+  });
+}
+
+function getStocksPrice(resData : responsePrice[], usTickers : USTicker){
+  let formatStocksPrice : StocksPrice = {};
+  resData.forEach((stock : {symbol : string, price : number})=>{
+    const ticker = usTickers[stock.symbol] || stock.symbol;
+    formatStocksPrice[ticker] = stock.price;
+  });
+
+  return formatStocksPrice;
+}
+
+interface USTicker {
+  [key: string] : string
+}
+
+interface responsePrice {
+    symbol : string,
+    price : number
+};
