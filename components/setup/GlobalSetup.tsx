@@ -1,7 +1,8 @@
 'use client'
 
 import React, { ReactNode } from 'react'
-import { useServerCheck, useStocksPriceData } from '../../hooks/useStock';
+import { useServerCheck } from '@/hooks/useServerStatus';
+import { useStocksPriceData } from '@/hooks/useStockPrice';
 
 export default function GlobalSetup({ children }: { children: ReactNode }) {
   useServerCheck();

@@ -1,3 +1,4 @@
+import { GET_PRICE, GET_STOCKS, GET_TICKER, GET_TICKERS, PING_QUERY } from '@/lib/graphql';
 import { isOfflineAtom, serverUrlAtom, stocksLoadingAtom } from '@/store/baseAtoms';
 import { StocksPrice, stocksPriceAtom } from '@/store/price';
 import { stockDashboardAtom } from '@/store/stocks';
@@ -5,24 +6,6 @@ import { useQuery } from '@tanstack/react-query';
 import { request, gql } from 'graphql-request';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useEffect } from 'react';
-
-// 1. ISIN으로 Ticker를 찾는 쿼리 (미국 전용)
-const GET_TICKER = gql`
-  query GetTicker($isin: String!) {
-    getTicker(isin: $isin) {
-      ticker
-    }
-  }
-`;
-
-// 2. 가격을 가져오는 쿼리
-const GET_PRICE = gql`
-  query GetStock($ticker: String!, $market: String!) {
-    getStock(ticker: $ticker, market: $market) {
-      price
-    }
-  }
-`;
 
 export function useUnifiedStockData(data: string, market: string) {
   const isOffLine = useAtomValue(isOfflineAtom);
@@ -58,24 +41,6 @@ export function useUnifiedStockData(data: string, market: string) {
   };
 }
 
-const GET_STOCKS = gql`
-  query GetStocks($stocks : [Stock]!) {
-    getStocks(stocks : $stocks) {
-      symbol
-      price
-    }
-  }
-`;
-
-const GET_TICKERS = gql`
-  query GetTickers($isinList : [String]!){
-    getTickers(isinList : $isinList){
-      ticker,
-      isin
-    }
-  }
-`
-
 export const useStocksPriceData = () => {
   const isOffLine = useAtomValue(isOfflineAtom);
   const {currentStocks} = useAtomValue(stockDashboardAtom);
@@ -83,7 +48,7 @@ export const useStocksPriceData = () => {
   const setStocksLoading = useSetAtom(stocksLoadingAtom);
   const serverUrl = useAtomValue(serverUrlAtom);
 
-  const updateTime = updateDate <= new Date().getTime() - (1000 * 60 * 10);
+  const isUpdateTime = updateDate <= new Date().getTime() - (1000 * 60 * 10);
 
   const isinList = Object.values(currentStocks)
   .filter((stock)=>stock.country !== "KR")
@@ -94,7 +59,7 @@ export const useStocksPriceData = () => {
   const tickersQuery = useQuery({
     queryKey : ["tickers", isinList],
     queryFn : () => request(serverUrl, GET_TICKERS, {isinList}),
-    enabled: !isOffLine && !!isinList && !!updateTime
+    enabled: !isOffLine && !!isinList && !!isUpdateTime
   });
 
   const tickers = tickersQuery.data?.getTickers || [];
@@ -120,7 +85,7 @@ export const useStocksPriceData = () => {
   const pricesQuery = useQuery({
     queryKey : ["stocksPrice", stocks],
     queryFn : () => request(serverUrl, GET_STOCKS, {stocks}),
-    enabled: !isOffLine && !!stocks && !!updateTime && !!tickersQuery.data,
+    enabled: !isOffLine && !!stocks && !!isUpdateTime && !!tickersQuery.data,
     refetchInterval: 1000 * 60 * 10,
   });
 
@@ -161,33 +126,4 @@ export const useStocksPriceData = () => {
   }, [pricesQuery.isSuccess, pricesQuery.isError, setStocksPrice])
 
   return pricesQuery;
-}
-
-const PING_QUERY = gql`
-  query Ping {
-    ping
-  }
-`;
-
-export function useServerCheck(){
-  const setIsOffLine = useSetAtom(isOfflineAtom);
-  const serverUrl = useAtomValue(serverUrlAtom);
-
-  const query = useQuery({
-    queryKey : ['serverStatus'],
-    queryFn: () => request(serverUrl, PING_QUERY),
-    retry: 1,
-    staleTime: 1000 * 60 * 5
-  });
-
-  useEffect(() => {
-    if(query.isSuccess){
-      setIsOffLine(false);
-    }
-    if(query.isError){
-      setIsOffLine(true);
-    }
-  }, [query.isSuccess, query.isError, setIsOffLine])
-
-  return query;
 }
