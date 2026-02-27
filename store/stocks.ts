@@ -1,6 +1,7 @@
-import { atom } from 'jotai';
-import { excelData, getHash, processExcelData } from '../lib/utils';
-import { atomWithStorage } from 'jotai/utils';
+import { excelData, getHash, processExcelData } from "@/lib/utils";
+import { atom } from "jotai";
+import { atomWithStorage } from "jotai/utils";
+import { excelDatAtom, lastHashAtom } from "./excel";
 
 export const stocksDataAtom = atomWithStorage<StocksData>("STOCKS_DATA", {
   totalInvestment : 0,
@@ -11,16 +12,6 @@ export const stocksDataAtom = atomWithStorage<StocksData>("STOCKS_DATA", {
   pastSales : []
 });
 
-export const excelDatAtom = atomWithStorage<excelData[]>("EXCEL_DATA", [], undefined, { getOnInit: true });
-
-export const lastHashAtom = atomWithStorage<string>("LAST_HASH", '', undefined, { getOnInit: true });
-
-export const exchangeRateAtom = atomWithStorage<number>("EXCHANGE_RATE", 1450 , undefined, { getOnInit: true });
-
-export const serverUrlAtom = atomWithStorage<string>("SERVER_URL", "http://localhost:4000", undefined, { getOnInit: true });
-
-export const isOfflineAtom = atom<boolean>(true);
-
 export const totalInvestmentAtom = atom((get) => get(stocksDataAtom).totalInvestment);
 export const currentInvestmentAtom = atom((get) => get(stocksDataAtom).currentInvestment);
 export const realizedProfitAtom = atom((get) => get(stocksDataAtom).realizedProfit);
@@ -29,22 +20,11 @@ export const dividendAtom = atom((get) => get(stocksDataAtom).dividend);
 export const currentStocksAtom = atom((get) => get(stocksDataAtom).currentStocks);
 export const pastSalesAtom = atom((get) => get(stocksDataAtom).pastSales);
 
-export const currentStocksReturnRateAtom = atom<{[name : string] : number}>({});
 
 export const stockDashboardAtom = atom((get)=>({
   currentStocks : get(currentStocksAtom),
   pastSales : get(pastSalesAtom)
 }))
-
-export const stocksLoadingAtom = atom(false);
-
-export const stocksPriceAtom = atomWithStorage<{
-  stocksPrice : StocksPrice;
-  updateDate : number;
-}>("STOCKS_PRICE", {
-  stocksPrice : {},
-  updateDate : 0
-} , undefined);
 
 export const summaryOverviewAtom = atom((get) => ({
   total: get(totalInvestmentAtom),
@@ -52,17 +32,6 @@ export const summaryOverviewAtom = atom((get) => ({
   profit: get(realizedProfitAtom),
   dividend: get(dividendAtom),
 }));
-
-export const updateExchangeRatioAtom = atom(
-  null,
-  (get, set, exchangeRate : number) => {
-    const excelData = get(excelDatAtom);
-    const stocksData = processExcelData(excelData, exchangeRate);
-
-    set(stocksDataAtom, stocksData);
-    set(exchangeRateAtom, exchangeRate);
-  }
-)
 
 export const updateStocksDataAtom = atom(
   null,
@@ -108,8 +77,4 @@ export interface PastSale {
   date : string;
   profits : number;
   amount : number;
-}
-
-export interface StocksPrice {
-  [name: string] : number
 }

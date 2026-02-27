@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Typography } from '@mui/material';
 import { useAtom } from 'jotai';
-import { serverUrlAtom } from '../../store/atoms';
+import { serverUrlAtom } from '../../store/baseAtoms';
 import DnsIcon from '@mui/icons-material/Dns';
 
 export default function ServerConfigModal({ open, onClose }: Props) {

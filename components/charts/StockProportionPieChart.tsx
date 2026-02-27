@@ -1,8 +1,8 @@
 import ReactECharts from 'echarts-for-react';
 import { useAtomValue } from 'jotai';
-import { stockDashboardAtom } from '@/store/atoms';
 import { useEffect, useState } from 'react';
 import { Card, Typography } from '@mui/material';
+import { stockDashboardAtom } from '@/store/stocks';
 
 export default function StockProportionPieChart() {
   const {currentStocks} = useAtomValue(stockDashboardAtom);

@@ -1,7 +1,7 @@
 'use client'
 
 import { Chip } from '@mui/material';
-import type { CurrentStock } from '../store/atoms'
+import type { CurrentStock } from '../store/stocks'
 import ReturnRatio from './ReturnRatio';
 import TradeDetailModal from './modals/TradeDetailModal';
 import { useState } from 'react';

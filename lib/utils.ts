@@ -1,4 +1,4 @@
-import { CurrentStocks, PastSale, StocksData } from "../store/atoms";
+import { CurrentStocks, PastSale, StocksData } from "@/store/stocks";
 
 export const processExcelData = (excelData : excelData[], exchangeRate = 1450) => {
   const result: StockHistory[] = [];

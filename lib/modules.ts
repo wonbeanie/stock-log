@@ -1,4 +1,5 @@
-import { CurrentStock, StocksPrice } from "@/store/atoms";
+import { StocksPrice } from "@/store/price";
+import { CurrentStock } from "@/store/stocks";
 
 export const formatDate = (timestamp : number = new Date().getTime()) => {
   if(timestamp === 0){

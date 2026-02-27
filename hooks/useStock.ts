@@ -1,7 +1,9 @@
+import { isOfflineAtom, serverUrlAtom, stocksLoadingAtom } from '@/store/baseAtoms';
+import { StocksPrice, stocksPriceAtom } from '@/store/price';
+import { stockDashboardAtom } from '@/store/stocks';
 import { useQuery } from '@tanstack/react-query';
 import { request, gql } from 'graphql-request';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
-import { isOfflineAtom, serverUrlAtom, stockDashboardAtom, stocksLoadingAtom, StocksPrice, stocksPriceAtom } from '../store/atoms';
 import { useEffect } from 'react';
 
 // 1. ISIN으로 Ticker를 찾는 쿼리 (미국 전용)

@@ -1,7 +1,9 @@
 'use client'
 
 import { formatReturnRate } from '@/lib/modules';
-import { CurrentStock, exchangeRateAtom, isOfflineAtom, stocksLoadingAtom, stocksPriceAtom } from '../store/atoms';
+import { stocksLoadingAtom } from '@/store/baseAtoms';
+import { exchangeRateAtom, stocksPriceAtom } from '@/store/price';
+import { CurrentStock } from '@/store/stocks';
 import { useAtomValue } from 'jotai';
 
 export default function ReturnRatio({stock} : {stock : CurrentStock}) {

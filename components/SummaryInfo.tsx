@@ -3,9 +3,10 @@
 import { Card, Grid, Typography } from '@mui/material'
 import ExcelUploadButton from './buttons/ExcelUploadButton';
 import { useAtomValue } from 'jotai';
-import { isOfflineAtom, summaryOverviewAtom } from '../store/atoms';
 import ServerConfigBtn from './buttons/ServerConfigBtn';
 import ExchangeRateBtn from './buttons/ExchangeRateBtn';
+import { summaryOverviewAtom } from '@/store/stocks';
+import { isOfflineAtom } from '@/store/baseAtoms';
 
 export default function SummaryInfo() {
   const summary = useAtomValue(summaryOverviewAtom);
