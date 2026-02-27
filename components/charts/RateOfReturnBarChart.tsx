@@ -1,6 +1,6 @@
 'use client'
 
-import { formatDate } from '@/lib/modules';
+import { formatDate } from '@/lib/utils';
 import { exchangeRateAtom, stocksPriceAtom } from '@/store/price';
 import { stockDashboardAtom } from '@/store/stocks';
 import { Card, Chip, Typography } from '@mui/material'

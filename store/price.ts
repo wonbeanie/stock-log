@@ -1,8 +1,8 @@
 import { atom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 import { excelDatAtom } from "./excel";
-import { processExcelData } from "@/lib/utils";
 import { stocksDataAtom } from "./stocks";
+import { processExcelData } from "@/lib/excel";
 
 export const exchangeRateAtom = atomWithStorage<number>(
   "EXCHANGE_RATE", 1450 , undefined, { getOnInit: true }

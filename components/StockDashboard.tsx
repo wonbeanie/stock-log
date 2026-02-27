@@ -4,11 +4,11 @@ import { Card, Chip, Grid, Typography } from '@mui/material'
 import { useAtomValue } from 'jotai';
 import CurrentStock from './CurrentStock';
 import { CurrentStock as CurrentStockType } from '@/store/stocks';
-import { formatDate, formatReturnRate } from '@/lib/modules';
 import { useState } from 'react';
 import { stockDashboardAtom } from '@/store/stocks';
 import { exchangeRateAtom, stocksPriceAtom } from '@/store/price';
 import { stocksLoadingAtom } from '@/store/baseAtoms';
+import { formatDate, formatReturnRate } from '@/lib/utils';
 
 export default function StockDashboard() {
   const {currentStocks, pastSales} = useAtomValue(stockDashboardAtom);

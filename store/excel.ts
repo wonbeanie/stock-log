@@ -1,4 +1,4 @@
-import { excelData } from "@/lib/utils";
+import { excelData } from "@/lib/excel";
 import { atomWithStorage } from "jotai/utils";
 
 export const excelDatAtom = atomWithStorage<excelData[]>(

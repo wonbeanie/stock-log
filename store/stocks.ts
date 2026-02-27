@@ -1,7 +1,8 @@
-import { excelData, getHash, processExcelData } from "@/lib/utils";
 import { atom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 import { excelDatAtom, lastHashAtom } from "./excel";
+import { excelData, processExcelData } from "@/lib/excel";
+import { getHash } from "@/lib/utils";
 
 export const stocksDataAtom = atomWithStorage<StocksData>("STOCKS_DATA", {
   totalInvestment : 0,

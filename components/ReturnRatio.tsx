@@ -1,6 +1,6 @@
 'use client'
 
-import { formatReturnRate } from '@/lib/modules';
+import { formatReturnRate } from '@/lib/utils';
 import { stocksLoadingAtom } from '@/store/baseAtoms';
 import { exchangeRateAtom, stocksPriceAtom } from '@/store/price';
 import { CurrentStock } from '@/store/stocks';
