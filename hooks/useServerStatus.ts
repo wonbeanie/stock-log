@@ -1,12 +1,10 @@
 import { PING_QUERY } from "@/lib/graphql";
-import { isOfflineAtom, serverUrlAtom } from "@/store/baseAtoms";
+import { serverUrlAtom } from "@/store/baseAtoms";
 import { useQuery } from "@tanstack/react-query";
 import request from "graphql-request";
-import { useAtomValue, useSetAtom } from "jotai";
-import { useEffect } from "react";
+import { useAtomValue } from "jotai";
 
 export function useServerCheck(){
-  const setIsOffLine = useSetAtom(isOfflineAtom);
   const serverUrl = useAtomValue(serverUrlAtom);
 
   const query = useQuery({
@@ -15,15 +13,6 @@ export function useServerCheck(){
     retry: 1,
     staleTime: 1000 * 60 * 5
   });
-
-  useEffect(() => {
-    if(query.isSuccess){
-      setIsOffLine(false);
-    }
-    if(query.isError){
-      setIsOffLine(true);
-    }
-  }, [query.isSuccess, query.isError, setIsOffLine])
 
   return query;
 }

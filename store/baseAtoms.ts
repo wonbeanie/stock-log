@@ -6,3 +6,28 @@ export const serverUrlAtom = atomWithStorage<string>(
 );
 export const isOfflineAtom = atom<boolean>(true);
 export const stocksLoadingAtom = atom(false);
+
+export const updateLoadingAtom = atom(
+  null,
+  (get, set, {
+    isLoading,
+    isComplete
+  } : {
+    isLoading : boolean;
+    isComplete : boolean;
+  }) => {
+    if(!isLoading && !isComplete){
+      set(stocksLoadingAtom, false);
+      return;
+    }
+
+    if(isLoading && !isComplete){
+      set(stocksLoadingAtom, true);
+      return;
+    }
+
+    if(isComplete){
+      set(stocksLoadingAtom, false);
+    }
+  }
+)

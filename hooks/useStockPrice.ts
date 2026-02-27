@@ -1,11 +1,10 @@
-import { GET_PRICE, GET_STOCKS, GET_TICKER, GET_TICKERS, PING_QUERY } from '@/lib/graphql';
-import { isOfflineAtom, serverUrlAtom, stocksLoadingAtom } from '@/store/baseAtoms';
+import { GET_PRICE, GET_STOCKS, GET_TICKER, GET_TICKERS } from '@/lib/graphql';
+import { isOfflineAtom, serverUrlAtom } from '@/store/baseAtoms';
 import { StocksPrice, stocksPriceAtom } from '@/store/price';
 import { CurrentStocks, stockDashboardAtom } from '@/store/stocks';
 import { useQuery } from '@tanstack/react-query';
-import { request, gql } from 'graphql-request';
-import { useAtom, useAtomValue, useSetAtom } from 'jotai';
-import { useEffect } from 'react';
+import { request, } from 'graphql-request';
+import { useAtomValue } from 'jotai';
 
 export function useUnifiedStockData(data: string, market: string) {
   const isOffLine = useAtomValue(isOfflineAtom);
@@ -44,65 +43,62 @@ export function useUnifiedStockData(data: string, market: string) {
 export const useStocksPriceData = () => {
   const isOffLine = useAtomValue(isOfflineAtom);
   const {currentStocks} = useAtomValue(stockDashboardAtom);
-  const [{updateDate}, setStocksPrice] = useAtom(stocksPriceAtom);
-  const setStocksLoading = useSetAtom(stocksLoadingAtom);
+  const {updateDate} = useAtomValue(stocksPriceAtom);
   const serverUrl = useAtomValue(serverUrlAtom);
 
   const isUpdateTime = updateDate <= new Date().getTime() - (1000 * 60 * 10);
 
   const isinList = getIsinList(currentStocks);
 
-  const tickersQuery = useQuery({
+  const isTickersQueryEnable = !isOffLine && isinList.length > 0 && !!isUpdateTime;
+  const {data: tickerQueryData} = useQuery({
     queryKey : ["tickers", isinList],
     queryFn : () => request(serverUrl, GET_TICKERS, {isinList}),
-    enabled: !isOffLine && !!isinList && !!isUpdateTime
+    enabled: isTickersQueryEnable,
+    select: (data) => data.getTickers,
   });
 
-  const tickers = tickersQuery.data?.getTickers || [];
+  const tickers = tickerQueryData || [];
 
   const usTickers = getUSTickers(tickers);
 
   const requestStocks = getRequestStocks(currentStocks, usTickers);
 
-  const pricesQuery = useQuery({
+  const isStocksPriceQueryEnable = !isOffLine && !!requestStocks && !!isUpdateTime && !!tickerQueryData;
+  const {data : pricesQueryData} = useQuery({
     queryKey : ["stocksPrice", requestStocks],
-    queryFn : () => request(serverUrl, GET_STOCKS, {requestStocks}),
-    enabled: !isOffLine && !!requestStocks && !!isUpdateTime && !!tickersQuery.data,
+    queryFn : () => request(serverUrl, GET_STOCKS, {stocks : requestStocks}),
+    enabled: isStocksPriceQueryEnable,
     refetchInterval: 1000 * 60 * 10,
+    select: (data) => data.getStocks,
   });
 
-  const result = (pricesQuery.data?.getStocks || []) as responsePrice[];
+  if(!isStocksPriceQueryEnable){
+    return {
+      priceInfo : null,
+      isLoading : false,
+      isComplete : true
+    };
+  }
 
-  const formatStocksPrice = getStocksPrice(result, usTickers);
+  if(!pricesQueryData){
+    return {
+      priceInfo : null,
+      isLoading: true,
+      isComplete: false,
+    };
+  }
 
-  useEffect(()=>{
-    if(!tickersQuery.isLoading && !pricesQuery.isLoading){
-      setStocksLoading(false);
-    }
-    else {
-      setStocksLoading(true);
-    }
-  }, [tickersQuery.isLoading, pricesQuery.isLoading, setStocksLoading]);
-
-  useEffect(() => {
-    if(pricesQuery.isSuccess){
-      if(Object.keys(formatStocksPrice).length === 0){
-        return;
-      }
-      setStocksPrice({
-        stocksPrice : formatStocksPrice,
-        updateDate : new Date().getTime()
-      });
-    }
-    if(pricesQuery.isError){
-      setStocksPrice({
-        stocksPrice : {},
-        updateDate : 0
-      });
-    }
-  }, [pricesQuery.isSuccess, pricesQuery.isError, setStocksPrice])
-
-  return pricesQuery;
+  const priceData = (pricesQueryData || []) as responsePrice[];
+  const formatStocksPrice = getStocksPrice(priceData, usTickers);
+  return {
+    priceInfo : {
+      stocksPrice : formatStocksPrice,
+      updateDate : new Date().getTime()
+    },
+    isLoading: false,
+    isComplete : true
+  };
 }
 
 function getIsinList(currentStocks : CurrentStocks){
@@ -126,7 +122,7 @@ function getUSTickers(tickers : { isin: string; ticker: string; }[]){
   return result;
 }
 
-function getRequestStocks(currentStocks : CurrentStocks, usTickers : USTicker){
+function getRequestStocks(currentStocks : CurrentStocks, usTickers : USTicker) : RequestStocks[]{
   return Object.values(currentStocks).map((stock)=>{
     const isUS = stock.country === "US";
 
@@ -157,3 +153,8 @@ interface responsePrice {
     symbol : string,
     price : number
 };
+
+interface RequestStocks {
+  ticker: string;
+  country: string;
+}
