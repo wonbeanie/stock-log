@@ -10,7 +10,7 @@ export const stocksDataAtom = atomWithStorage<StocksData>("STOCKS_DATA", {
   realizedProfit : 0,
   dividend : 0,
   currentStocks : {},
-  pastSales : []
+  pastSales : [],
 });
 
 export const totalInvestmentAtom = atom((get) => get(stocksDataAtom).totalInvestment);
@@ -18,7 +18,13 @@ export const currentInvestmentAtom = atom((get) => get(stocksDataAtom).currentIn
 export const realizedProfitAtom = atom((get) => get(stocksDataAtom).realizedProfit);
 export const dividendAtom = atom((get) => get(stocksDataAtom).dividend);
 
-export const currentStocksAtom = atom((get) => get(stocksDataAtom).currentStocks);
+export const currentStocksAtom = atom(
+  (get) => get(stocksDataAtom).currentStocks,
+  (get, set, newCurrentStocks : CurrentStocks) => set(stocksDataAtom, {
+    ...get(stocksDataAtom),
+    currentStocks : newCurrentStocks
+  })
+);
 export const pastSalesAtom = atom((get) => get(stocksDataAtom).pastSales);
 
 
@@ -70,6 +76,7 @@ export interface CurrentStock {
   amountInput : number;
   amount : number;
   country: string;
+  returnRate : number | "NO DATA";
 }
 
 export interface PastSale {

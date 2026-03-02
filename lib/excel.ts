@@ -84,6 +84,7 @@ const formatStocks = (data : StockHistory[], exchangeRate = 1450) : StocksData =
           dateOfPossession : getDateOfPossession(history["거래일자"]),
           amountInput : tradedPrice,
           amount : history["수량"],
+          returnRate : 0,
           country
         }
       }

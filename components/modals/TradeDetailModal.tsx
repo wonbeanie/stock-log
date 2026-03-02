@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -13,18 +13,19 @@ import CloseIcon from '@mui/icons-material/Close';
 import HistoryIcon from '@mui/icons-material/History';
 import { useAtomCallback } from 'jotai/utils';
 import { pastSalesAtom } from '@/store/stocks';
+import History from './trade-detail/History';
 
 export default function TradeDetailModal({open, onClose, stockInfo} : Props) {
   const [tradeHistory, setTradeHistory] = useState<TradeRecord[]>([]);
 
   useEffect(()=>{
     updateHistory();
-  },[]);
+  },[stockInfo.name]);
 
-  const updateHistory = async () => {
+  const updateHistory = useCallback(async () => {
     const tradeHistory = getTradeHistory(stockInfo.name);
     setTradeHistory(tradeHistory);
-  }
+  }, [stockInfo.name])
 
   const getTradeHistory = useAtomCallback(
     (get, set, stockName : string) => {
@@ -75,25 +76,9 @@ export default function TradeDetailModal({open, onClose, stockInfo} : Props) {
         <div className="mt-4 space-y-6 relative">
           <div className="absolute left-[11px] top-2 bottom-2 w-[2px] bg-gray-100 z-0" />
 
-          {tradeHistory.map((trade, idx) => (
+          {tradeHistory.map(({type, amount, date, price}, idx) => (
             <div key={idx} className="relative z-10 flex items-start gap-4">
-              <div className={`w-[24px] h-[24px] rounded-full border-4 border-white shadow-sm flex-shrink-0 ${
-                trade.type === '매수' ? 'bg-red-500' : 'bg-blue-500'
-              }`} />
-              
-              <div className="flex-grow">
-                <div className="flex justify-between items-center mb-1">
-                  <Typography className="text-sm font-bold text-gray-800">
-                    {trade.type} {trade.amount.toLocaleString()}주
-                  </Typography>
-                  <Typography className="text-[11px] text-gray-400 font-medium">
-                    {trade.date}
-                  </Typography>
-                </div>
-                <Typography className="text-xs text-gray-500">
-                  체결가: <span className="font-semibold text-gray-700">₩{trade.price.toLocaleString()}</span>
-                </Typography>
-              </div>
+              <History type={type} amount={amount} date={date} price={price}/>
             </div>
           ))}
         </div>

@@ -1,6 +1,6 @@
-import { CurrentStock } from "@/store/stocks";
+import { CurrentStock, CurrentStocks, StocksData } from "@/store/stocks";
 import { excelData } from "./excel";
-import { StocksPrice } from "@/store/price";
+import { PriceInfo, StocksPrice } from "@/store/price";
 import * as XLSX from 'xlsx';
 
 export const getHash = (data : excelData[]) => {
@@ -59,7 +59,7 @@ export const formatReturnRate = (stock : CurrentStock, stocksPrice : StocksPrice
 
   const result = (valueAmount / stock.amountInput) * 100 - 100;
 
-  return result;
+  return Math.round(result * 100) / 100;
 }
 
 export const readFilesAsBuffer = async (files : FileList) => {
@@ -91,4 +91,19 @@ export const readFilesAsBuffer = async (files : FileList) => {
     console.log(err);
     return [];
   }
+}
+
+export const formatCurrentStocksPrice = (
+  currentStocks : CurrentStocks, stocksPrice : StocksPrice, exchangeRate : number
+) => {
+  let result : CurrentStocks = {};
+  Object.entries(currentStocks).forEach(([name, stocks])=>{
+    const returnRate = formatReturnRate(stocks, stocksPrice, exchangeRate);
+    result[name] = {
+      ...stocks,
+      returnRate
+    }
+  });
+
+  return result;
 }
