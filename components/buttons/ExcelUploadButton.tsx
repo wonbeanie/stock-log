@@ -3,10 +3,9 @@
 import React, { useRef } from 'react';
 import { Button } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import * as XLSX from 'xlsx';
 import { useSetAtom } from 'jotai';
 import { updateStocksDataAtom } from '@/store/stocks';
-import { excelData } from '@/lib/excel';
+import { readFilesAsBuffer } from '@/lib/utils';
 
 export default function ExcelUploadButton() {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -24,38 +23,6 @@ export default function ExcelUploadButton() {
 
     setExcelData(excelsData.flat());
   };
-
-
-  const readFilesAsBuffer = async (files : FileList) => {
-    const promises = Array.from(files).map((file) => {
-      return new Promise((resolve)=>{
-        const reader = new FileReader();
-      
-        reader.onload = (evt) => {
-          const data = evt.target?.result;
-          if (!data) return;
-
-          const wb = XLSX.read(data, { type: 'array' });
-          const wsname = wb.SheetNames[0];
-          const ws = wb.Sheets[wsname];
-          
-          const excelData = XLSX.utils.sheet_to_json(ws).slice(1) as excelData[];
-          resolve(excelData)
-        };
-
-        reader.readAsArrayBuffer(file);
-      }) as Promise<excelData[]>;
-    })
-
-    try {
-      const results = await Promise.all(promises);
-      return results;
-    }
-    catch (err) {
-      console.log(err);
-      return [];
-    }
-  }
 
   return (
     <>
