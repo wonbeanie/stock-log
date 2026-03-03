@@ -1,26 +1,23 @@
 import ReactECharts from 'echarts-for-react';
 import { useAtomValue } from 'jotai';
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
 import { Card, Typography } from '@mui/material';
 import { stockDashboardAtom } from '@/store/stocks';
 
 export default function StockProportionPieChart() {
   const {currentStocks} = useAtomValue(stockDashboardAtom);
-  const [currentStocksOption, setCurrentStocksOption] = useState({});
 
-  useEffect(()=>{
-    initPieChat();
-  },[]);
-
-  const initPieChat = () => {
-    const pieData = Object.entries(currentStocks).map(([stockName, stock]) => {
+  const pieData = useMemo(()=>{
+    return Object.entries(currentStocks).map(([stockName, stock]) => {
       return {
         name: stockName,
         value: stock.amountInput
       }
     }).sort((a, b) => b.value - a.value);
+  }, [currentStocks])
 
-    setCurrentStocksOption({
+  const currentStocksOption = useMemo(()=>{
+    return {
       tooltip: {
         trigger: 'item',
         formatter: '{b}({d}%)'
@@ -41,8 +38,8 @@ export default function StockProportionPieChart() {
           }
         }
       ]
-    })
-  }
+    }
+  }, [pieData]);
 
   return (
     <Card className="shadow-xl border-none rounded-3xl p-6 bg-white">

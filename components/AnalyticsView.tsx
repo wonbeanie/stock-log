@@ -3,7 +3,6 @@ import StockProportionPieChart from './charts/StockProportionPieChart'
 import RateOfReturnBarChart from './charts/RateOfReturnBarChart'
 
 export default function AnalyticsView() {
-
   return (
     <div className="animate-in fade-in zoom-in-95 duration-500">
       <Grid container spacing={3}>
