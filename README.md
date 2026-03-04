@@ -4,6 +4,9 @@
 - 나무 증권의 종합거래내역(상세)을 기준으로 작성하였습니다.
 - 과거 환율로 계산되는 것이 아닌 설정한 환율을 기준으로 모든 가격이 계산되기 때문에 오차가 있습니다.
 
+## 배포 주소
+- https://wonbeanie.github.io/stock-log-dist/
+
 ## 작동 사진
 <details>
   <summary>작동 사진 보기</summary>
