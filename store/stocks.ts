@@ -85,4 +85,8 @@ export interface PastSale {
   date : string;
   profits : number;
   amount : number;
+  unitPrice : number;
+  settledAmount : number;
+  ticker : string;
+  balance : number;
 }

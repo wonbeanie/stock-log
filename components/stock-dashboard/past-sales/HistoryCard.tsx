@@ -1,21 +1,32 @@
+import TradeDetailModal from '@/components/modals/TradeDetailModal';
+import { PastSale } from '@/store/stocks';
 import { Typography } from '@mui/material';
+import { useMemo, useState } from 'react';
 
-export default function HistoryCard({profits, type, name, date} : Props) {
-  const minus = profits < 0;
+export default function HistoryCard({history} : Props) {
+  const [open, setOpen] = useState(false);
+  const onHandlerModal = () => {
+    setOpen(!open);
+  }
+
+  const {type, settledAmount, profits, name, date, ticker} = history;
+  const isLoss = profits < 0;
   const isBuy = type === "매수";
   const typeColor = isBuy ?
   'bg-gray-100 text-gray-600' :
-  minus ?
+  isLoss ?
   'bg-blue-50 text-blue-600' :
   'bg-red-50 text-red-600';
 
   const typeLabel = isBuy ? "매수금" : "수익금";
   const profitColor = isBuy ?
   'text-gray-900' :
-  minus ? 'text-blue-500' : 'text-red-500';
+  isLoss ? 'text-blue-500' : 'text-red-500';
+  const price = isBuy ? settledAmount : profits;
 
   return (
-    <>
+    <div className="flex justify-between items-center p-4 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all"
+          onClick={onHandlerModal}>
       <div className="flex gap-3 items-center">
         <div className={`w-11 h-11 rounded-2xl ${typeColor} flex flex-col items-center justify-center transition-colors`}>
           <span className="text-xs font-black">{type}</span>
@@ -35,18 +46,19 @@ export default function HistoryCard({profits, type, name, date} : Props) {
         <Typography className="text-[10px] text-gray-400 font-bold">{typeLabel}</Typography>
         <div className="flex flex-col">
           <Typography className={`font-black ${profitColor} text-sm`}>
-            {(!isBuy && !minus) && "+"}
-            {profits.toLocaleString()}원
+            {(!isBuy && !isLoss) && "+"}
+            {price.toLocaleString()}원
           </Typography>
         </div>
       </div>
-    </>
+      <TradeDetailModal open={open} onClose={onHandlerModal} stockInfo={{
+        name,
+        ticker
+      }} />
+    </div>
   )
 }
 
 interface Props {
-  profits : number;
-  type : string;
-  name : string;
-  date : string;
+  history : PastSale;
 }

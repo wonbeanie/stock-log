@@ -12,11 +12,11 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 import HistoryIcon from '@mui/icons-material/History';
 import { useAtomCallback } from 'jotai/utils';
-import { pastSalesAtom } from '@/store/stocks';
+import { PastSale, pastSalesAtom } from '@/store/stocks';
 import History from './trade-detail/History';
 
 export default function TradeDetailModal({open, onClose, stockInfo} : Props) {
-  const [tradeHistory, setTradeHistory] = useState<TradeRecord[]>([]);
+  const [tradeHistory, setTradeHistory] = useState<PastSale[]>([]);
 
   useEffect(()=>{
     updateHistory();
@@ -30,14 +30,7 @@ export default function TradeDetailModal({open, onClose, stockInfo} : Props) {
   const getTradeHistory = useAtomCallback(
     (get, set, stockName : string) => {
       const pastSales = get(pastSalesAtom);
-      return pastSales.filter((history) => history.name === stockName).map((history) => {
-        return {
-          date: history.date,
-          type: history.type,
-          price: history.profits,
-          amount: history.amount
-        }
-      });
+      return pastSales.filter((history) => history.name === stockName);
     }
   )
 
@@ -76,9 +69,9 @@ export default function TradeDetailModal({open, onClose, stockInfo} : Props) {
         <div className="mt-4 space-y-6 relative">
           <div className="absolute left-[11px] top-2 bottom-2 w-[2px] bg-gray-100 z-0" />
 
-          {tradeHistory.map(({type, amount, date, price}, idx) => (
+          {tradeHistory.map((history, idx) => (
             <div key={idx} className="relative z-10 flex items-start gap-4">
-              <History type={type} amount={amount} date={date} price={price}/>
+              <History history={history}/>
             </div>
           ))}
         </div>
@@ -94,11 +87,4 @@ interface Props {
     name : string;
     ticker : string;
   };
-}
-
-interface TradeRecord {
-  date: string;
-  type: string;
-  price: number;
-  amount: number;
 }

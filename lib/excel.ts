@@ -59,8 +59,10 @@ const formatStocks = (data : StockHistory[], exchangeRate = 1450) : StocksData =
     const isBuy = history["거래유형"].includes("매수");
     if(isBuy){
       let tradedPrice = history["거래금액"];
+      let unitPrice = history["단가"];
       if(isForeign){
         tradedPrice *= exchangeRate;
+        unitPrice *= exchangeRate;
       }
       totalInvestment += tradedPrice;
       currentInvestment += tradedPrice;
@@ -69,7 +71,11 @@ const formatStocks = (data : StockHistory[], exchangeRate = 1450) : StocksData =
         type : history["거래유형"],
         date : history["거래일자"],
         amount : history["수량"],
-        profits : tradedPrice
+        ticker : history["종목코드"],
+        balance : history["잔고"],
+        settledAmount : tradedPrice,
+        profits : 0,
+        unitPrice
       });
 
       const isFirstBuy = !currentNames.has(history["종목명"]);
@@ -98,9 +104,11 @@ const formatStocks = (data : StockHistory[], exchangeRate = 1450) : StocksData =
     const isSell = history["거래유형"].includes("매도");
     if(isSell){
       let tradedPrice = history["거래금액"];
+      let unitPrice = history["단가"];
       let profits = 0;
       if(isForeign){
         tradedPrice *= exchangeRate;
+        unitPrice *= exchangeRate;
       }
 
       if(currentNames.has(history["종목명"])){
@@ -122,6 +130,10 @@ const formatStocks = (data : StockHistory[], exchangeRate = 1450) : StocksData =
         type : history["거래유형"],
         date : history["거래일자"],
         amount : history["수량"],
+        ticker : history["종목코드"],
+        balance : history["잔고"],
+        settledAmount : tradedPrice,
+        unitPrice,
         profits
       });
     }
