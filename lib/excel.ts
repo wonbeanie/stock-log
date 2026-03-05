@@ -1,5 +1,5 @@
 import { CurrentStocks, PastSale, StocksData } from "@/store/stocks";
-import { getDateOfPossession } from "./utils";
+import { formatDate, getDateOfPossession } from "./utils";
 
 export const processExcelData = (excelData : excelData[], exchangeRate = 1450) => {
   const result = formatExcelData(excelData);
@@ -26,7 +26,7 @@ const formatExcelData = (excelData : excelData[]) => {
       "이자": secondData["이율"],
       "세금": secondData["수수료"],
       "변제금": secondData["연체료"],
-      "거래일자": `${firstData["거래일자"]} ${secondData["거래일자"]}`
+      "거래일자": formatDate(`${firstData["거래일자"]} ${secondData["거래일자"]}`)
     }
 
     result.push(stockHistory);

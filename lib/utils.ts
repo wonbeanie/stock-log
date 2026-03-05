@@ -21,7 +21,7 @@ export const getDateOfPossession = (buyDate : string) => {
   return diffDays;
 }
 
-export const formatDate = (timestamp : number = Date.now()) => {
+export const formatTimestamp = (timestamp : number = Date.now()) => {
   if(timestamp === 0){
     return `NO UPDATED`;
   }
@@ -42,6 +42,10 @@ export const formatDate = (timestamp : number = Date.now()) => {
 
 
   return `${year}-${formatMonth}-${formatDay} ${formatHours}:${formatMinutes}:${formatSeconds}`;
+}
+
+export const formatDate = (excelDate : string) => {
+  return excelDate.replaceAll("(", "").replaceAll(")", "");
 }
 
 export const formatReturnRate = (stock : CurrentStock, stocksPrice : StocksPrice, exchangeRate = 1450) => {

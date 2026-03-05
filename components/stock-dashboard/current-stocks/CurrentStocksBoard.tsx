@@ -1,6 +1,6 @@
 'use client'
 
-import { formatDate } from '@/lib/utils'
+import { formatTimestamp } from '@/lib/utils'
 import { Card, Chip, Typography } from '@mui/material'
 import { useAtomValue } from 'jotai';
 import { stocksPriceAtom } from '@/store/price';
@@ -16,7 +16,7 @@ export default function CurrentStocksBoard() {
     <Card className="shadow-lg border border-gray-100 rounded-3xl flex flex-col h-[600px] overflow-hidden bg-white">
       <div className="p-6 flex justify-between items-center border-b border-gray-50">
         <Typography variant="h6" className="font-bold text-gray-800">현재 보유 종목</Typography>
-        <Chip label={`Last updated: ${formatDate(updateDate)}`} size="small" variant="outlined" className="text-gray-400 border-gray-200" />
+        <Chip label={`Last updated: ${formatTimestamp(updateDate)}`} size="small" variant="outlined" className="text-gray-400 border-gray-200" />
       </div>
       <div className="flex-grow overflow-y-auto custom-scrollbar">
         <table className="w-full text-left">

@@ -1,7 +1,7 @@
 'use client'
 
 import { formatChartData } from '@/lib/chart';
-import { formatDate } from '@/lib/utils';
+import { formatTimestamp } from '@/lib/utils';
 import { exchangeRateAtom, stocksPriceAtom } from '@/store/price';
 import { stockDashboardAtom } from '@/store/stocks';
 import { Card, Chip, Typography } from '@mui/material'
@@ -58,7 +58,7 @@ export default function RateOfReturnBarChart() {
     <Card className="shadow-xl border-none rounded-3xl p-6 bg-white">
       <div className="flex justify-between items-center mb-6">
         <Typography className="font-black text-gray-800">현재 보유 주식 수익률</Typography>
-        <Chip label={`Last updated: ${formatDate(updateDate)}`} size="small" variant="outlined" className="text-gray-400 border-gray-200" />
+        <Chip label={`Last updated: ${formatTimestamp(updateDate)}`} size="small" variant="outlined" className="text-gray-400 border-gray-200" />
       </div>
       <div className="h-[400px] w-full bg-gray-50 rounded-2xl border border-dashed border-gray-200 flex items-center justify-center">
         {
