@@ -4,9 +4,28 @@ import { stockDashboardAtom } from '@/store/stocks';
 import { Card, Typography } from '@mui/material';
 import { useAtomValue } from 'jotai';
 import HistoryCard from './HistoryCard';
+import TradeDetailModal from '@/components/modals/TradeDetailModal';
+import { useCallback, useState } from 'react';
 
 export default function PastSalesBoard() {
   const {pastSales} = useAtomValue(stockDashboardAtom);
+  const [open, setOpen] = useState(false);
+  const [selectedHistory, setSelectedHistory] = useState<SelectedHistory>({
+    name : "",
+    ticker : ""
+  });
+  
+  const onHandlerModal = useCallback(() => {
+    setOpen(!open);
+  }, [open]);
+
+  const onHandlerCard = useCallback(({name, ticker} : SelectedHistory) => {
+    setSelectedHistory({
+      name,
+      ticker
+    });
+    onHandlerModal();
+  }, []);
 
   return (
     <>
@@ -18,12 +37,22 @@ export default function PastSalesBoard() {
           {
             pastSales.map((history, i) => {
               return (
-                <HistoryCard key={`${history.ticker}-${history.balance}-${history.date}`} history={history} />
+                <div key={`${history.ticker}-${history.balance}-${history.date}`}
+                     className="flex justify-between items-center p-4 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all"
+                     onClick={() => onHandlerCard({name : history.name, ticker : history.ticker})}>
+                  <HistoryCard history={history} />
+                </div>
               )
             })
           }
         </div>
       </Card>
+      <TradeDetailModal open={open} onClose={onHandlerModal} stockInfo={selectedHistory} />
     </>
   )
+}
+
+interface SelectedHistory {
+  name : string;
+  ticker : string;
 }

@@ -1,15 +1,9 @@
-import TradeDetailModal from '@/components/modals/TradeDetailModal';
 import { PastSale } from '@/store/stocks';
 import { Typography } from '@mui/material';
-import { useMemo, useState } from 'react';
+import React from 'react';
 
-export default function HistoryCard({history} : Props) {
-  const [open, setOpen] = useState(false);
-  const onHandlerModal = () => {
-    setOpen(!open);
-  }
-
-  const {type, settledAmount, profits, name, date, ticker} = history;
+export default React.memo(function HistoryCard({history} : Props) {
+  const {type, settledAmount, profits, name, date} = history;
   const isLoss = profits < 0;
   const isBuy = type === "매수";
   const typeColor = isBuy ?
@@ -25,8 +19,7 @@ export default function HistoryCard({history} : Props) {
   const price = isBuy ? settledAmount : profits;
 
   return (
-    <div className="flex justify-between items-center p-4 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all"
-          onClick={onHandlerModal}>
+    <>
       <div className="flex gap-3 items-center">
         <div className={`w-11 h-11 rounded-2xl ${typeColor} flex flex-col items-center justify-center transition-colors`}>
           <span className="text-xs font-black">{type}</span>
@@ -51,13 +44,9 @@ export default function HistoryCard({history} : Props) {
           </Typography>
         </div>
       </div>
-      <TradeDetailModal open={open} onClose={onHandlerModal} stockInfo={{
-        name,
-        ticker
-      }} />
-    </div>
+    </>
   )
-}
+})
 
 interface Props {
   history : PastSale;
