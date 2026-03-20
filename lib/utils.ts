@@ -66,7 +66,7 @@ export const formatReturnRate = (stock : CurrentStock, stocksPrice : StocksPrice
   return Math.round(result * 100) / 100;
 }
 
-export const readFilesAsBuffer = async (files : FileList) => {
+export const readFilesAsBuffer = async (files: FileList) => {
   const promises = Array.from(files).map((file) => {
     return new Promise((resolve)=>{
       const reader = new FileReader();
@@ -75,12 +75,13 @@ export const readFilesAsBuffer = async (files : FileList) => {
         const data = evt.target?.result;
         if (!data) return;
 
-        const wb = XLSX.read(data, { type: 'array' });
-        const wsname = wb.SheetNames[0];
-        const ws = wb.Sheets[wsname];
-        
-        const excelData = XLSX.utils.sheet_to_json(ws).slice(1) as excelData[];
-        resolve(excelData)
+        const worker = new Worker(new URL('./worker.ts', import.meta.url));
+        worker.postMessage(data, [data as ArrayBuffer]);
+
+        worker.onmessage = (e) => {
+          resolve(e.data);
+          worker.terminate();
+        }
       };
 
       reader.readAsArrayBuffer(file);
