@@ -1,20 +1,27 @@
 import ReactECharts from 'echarts-for-react';
-import { useAtomValue } from 'jotai';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Card, Typography } from '@mui/material';
-import { stockDashboardAtom } from '@/store/stocks';
+import { StocksDB } from '@/lib/db';
 
 export default function StockProportionPieChart() {
-  const {currentStocks} = useAtomValue(stockDashboardAtom);
+  const [pieData, setPieData] = useState<PieData[]>([]);
 
-  const pieData = useMemo(()=>{
-    return Object.entries(currentStocks).map(([stockName, stock]) => {
-      return {
-        name: stockName,
-        value: stock.amountInput
-      }
-    }).sort((a, b) => b.value - a.value);
-  }, [currentStocks])
+  useEffect(()=>{
+    async function getData(){
+      const data = (await StocksDB.currentStocks
+          .orderBy('amountInput')
+          .reverse()
+          .toArray()
+        ).map((stock) => {
+          return {
+            name: stock.name,
+            value: stock.amountInput
+          }
+        })
+      setPieData(data);
+    }
+    getData();
+  },[]);
 
   const currentStocksOption = useMemo(()=>{
     return {
@@ -52,4 +59,9 @@ export default function StockProportionPieChart() {
       </div>
     </Card>
   )
+}
+
+interface PieData {
+  name: string;
+  value: number;
 }

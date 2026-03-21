@@ -7,14 +7,29 @@ import { stockDashboardAtom } from '@/store/stocks';
 import { Card, Chip, Typography } from '@mui/material'
 import ReactECharts from 'echarts-for-react';
 import { useAtomValue } from 'jotai';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import ToolTip from './ToolTip';
 import ReactDOMServer from 'react-dom/server';
+import { CurrentStockTable, StocksDB } from '@/lib/db';
 
 export default function RateOfReturnBarChart() {
   const {stocksPrice, updateDate} = useAtomValue(stocksPriceAtom);
-  const {currentStocks} = useAtomValue(stockDashboardAtom);
   const exchangeRate = useAtomValue(exchangeRateAtom);
+  const [currentStocks, setCurrentStocks] = useState<CurrentStockTable[]>([]);
+
+  useEffect(()=>{
+    async function getData(){
+      const data = (
+        await StocksDB.currentStocks
+        .orderBy('amountInput')
+        .reverse()
+        .toArray()
+      );
+      
+      setCurrentStocks(data);
+    }
+    getData();
+  }, []);
 
   const {chartData, options} = useMemo(()=>{
     const {chartData, yAxisData} = formatChartData(currentStocks, stocksPrice, exchangeRate);

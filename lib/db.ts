@@ -11,6 +11,7 @@ export interface PastSaleTable extends PastSale {
 
 export interface SummaryData {
   id: string;
+  key : string;
   value: number;
 }
 

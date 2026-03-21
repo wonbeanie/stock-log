@@ -13,8 +13,6 @@ self.onmessage = async (e) => {
     let data : excelData[] = [];
     let stocksData : StocksData = {} as StocksData;
 
-    let test = "";
-
     if(typeof e.data !== "number"){
       const { buffers } = e.data as { buffers: ArrayBuffer[] };
       if (!buffers) return;
@@ -51,14 +49,14 @@ self.onmessage = async (e) => {
       StocksDB.pastSales.clear(),
     ]);
 
-    await StocksDB.totalInvestment.add({ id: 'main', value: stocksData.totalInvestment });
-    await StocksDB.currentInvestment.add({ id: 'main', value: stocksData.currentInvestment });
-    await StocksDB.realizedProfit.add({ id: 'main', value: stocksData.realizedProfit });
-    await StocksDB.dividend.add({ id: 'main', value: stocksData.dividend });
+    await StocksDB.totalInvestment.add({ id: 'main', key: "total", value: stocksData.totalInvestment });
+    await StocksDB.currentInvestment.add({ id: 'main', key: "current", value: stocksData.currentInvestment });
+    await StocksDB.realizedProfit.add({ id: 'main', key: "profit", value: stocksData.realizedProfit });
+    await StocksDB.dividend.add({ id: 'main', key: "dividend", value: stocksData.dividend });
 
     await StocksDB.currentStocks.bulkAdd(Object.values(stocksData.currentStocks));
     await StocksDB.pastSales.bulkAdd(stocksData.pastSales);
-    self.postMessage({ type : 'DONE', count : data.length, log : test});
+    self.postMessage({ type : 'DONE', count : data.length});
   }
   catch(err){
     console.error(err);
