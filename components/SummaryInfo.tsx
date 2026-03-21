@@ -10,6 +10,7 @@ import { useAtomValue } from 'jotai';
 import { isOfflineAtom } from '@/store/baseAtoms';
 import { useEffect, useMemo, useState } from 'react';
 import { StocksDB } from '@/lib/db';
+import { lastHashAtom } from '@/store/excel';
 
 export default function SummaryInfo() {
   const [summaryOverview, setSummaryOverview] = useState<SummaryOverview>({
@@ -19,6 +20,7 @@ export default function SummaryInfo() {
     dividend: 0
   });
   const isOffline = useAtomValue(isOfflineAtom);
+  const lastHash = useAtomValue(lastHashAtom);
 
   useEffect(()=>{
     function getSummaryOverview(){
@@ -43,7 +45,7 @@ export default function SummaryInfo() {
       setSummaryOverview(data);
     }
     getData();
-  }, []);
+  }, [lastHash]);
 
   const summaryItems = useMemo(()=>[
     { label: '총 투자 금액', value: summaryOverview.total, unit: '원', color: 'text-gray-900' },

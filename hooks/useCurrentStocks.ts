@@ -1,9 +1,12 @@
 import { CurrentStockTable, StocksDB } from "@/lib/db";
+import { lastHashAtom } from "@/store/excel";
+import { useAtomValue } from "jotai";
 import { useCallback, useMemo, useState } from "react";
 
 export function useSortedCurrentStocks(){
   const [sortType, setSortType] = useState<string>("name");
   const [orderType, setOrderType] = useState<string>("ASC");
+  const lastHash = useAtomValue(lastHashAtom);
 
   const sortedCurrentStocks = useMemo(async ()=>{
     let data : CurrentStockTable[] = [];
@@ -20,7 +23,7 @@ export function useSortedCurrentStocks(){
     }
 
     return data;
-  }, [sortType, orderType]);
+  }, [sortType, orderType, lastHash]);
 
   const onHandlerSort = useCallback((type : string) => {
     return (e : React.MouseEvent<HTMLTableCellElement>) => {

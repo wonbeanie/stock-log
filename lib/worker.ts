@@ -12,6 +12,7 @@ self.onmessage = async (e) => {
   try{
     let data : excelData[] = [];
     let stocksData : StocksData = {} as StocksData;
+    let newHash = "";
 
     if(typeof e.data !== "number"){
       const { buffers } = e.data as { buffers: ArrayBuffer[] };
@@ -24,7 +25,7 @@ self.onmessage = async (e) => {
         combinedData.push(data); 
       }
       data = combinedData.flat();
-      const newHash = getHash(data);
+      newHash = getHash(data);
       await clear();
       await set('EXCEL_DATA', data);
       await set('LAST_HASH', newHash);
@@ -56,7 +57,7 @@ self.onmessage = async (e) => {
 
     await StocksDB.currentStocks.bulkAdd(Object.values(stocksData.currentStocks));
     await StocksDB.pastSales.bulkAdd(stocksData.pastSales);
-    self.postMessage({ type : 'DONE', count : data.length});
+    self.postMessage({ type : 'DONE', count : data.length, newHash});
   }
   catch(err){
     console.error(err);

@@ -1,13 +1,14 @@
 import { StocksPrice } from "@/store/price";
 import { CurrentStocks } from "@/store/stocks";
+import { CurrentStockTable } from "./db";
 
 export const formatChartData = (
-  currentStocks : CurrentStocks,
+  currentStocks : CurrentStockTable[],
   stocksPrice : StocksPrice,
   exchangeRate = 1450
 ) => {
   let chartData : ChartData[] = [];
-  Object.entries(currentStocks).forEach(([stockName, stock]) => {
+  currentStocks.forEach((stock) => {
     const price = stocksPrice[stock.ticker];
 
     let valueAmount = price ? price * stock.amount : 0;
@@ -25,7 +26,7 @@ export const formatChartData = (
     chartData.push({
       profit: valueAmount - stock.amountInput,
       value: returnRate,
-      name: stockName,
+      name: stock.name,
       itemStyle: {
         color: returnRate >= 0 ? '#ef4444' : '#3b82f6',
         borderRadius: [0, 4, 4, 0]

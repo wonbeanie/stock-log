@@ -8,15 +8,16 @@ import TradeDetailModal from '@/components/modals/TradeDetailModal';
 import { useCallback, useEffect, useState } from 'react';
 import PastStocksScrollView from './PastStocksScrollView';
 import { StocksDB } from '@/lib/db';
+import { lastHashAtom } from '@/store/excel';
 
 export default function PastSalesBoard() {
-  // const {pastSales} = useAtomValue(stockDashboardAtom);
   const [open, setOpen] = useState(false);
   const [selectedHistory, setSelectedHistory] = useState<SelectedHistory>({
     name : "",
     ticker : ""
   });
   const [pastSales, setPastSales] = useState<PastSale[]>([]);
+  const lastHash = useAtomValue(lastHashAtom);
   
   useEffect(()=>{
     async function getData(){
@@ -24,7 +25,7 @@ export default function PastSalesBoard() {
       setPastSales(pastSales);
     }
     getData();
-  },[]);
+  },[lastHash]);
 
   const onHandlerModal = useCallback(() => {
     setOpen(!open);

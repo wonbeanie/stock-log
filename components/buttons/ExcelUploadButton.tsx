@@ -4,9 +4,12 @@ import React, { useRef } from 'react';
 import { Button } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { readFilesAsBuffer } from '@/lib/utils';
+import { useSetAtom } from 'jotai';
+import { lastHashAtom } from '@/store/excel';
 
 export default function ExcelUploadButton() {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const setLastHash = useSetAtom(lastHashAtom);
 
   const handleButtonClick = () => {
     fileInputRef.current?.click();
@@ -17,6 +20,10 @@ export default function ExcelUploadButton() {
     if (!files) return;
 
     const data = await readFilesAsBuffer(files);
+
+    if(!data) return;
+
+    setLastHash(data.newHash);
   };
 
   return (

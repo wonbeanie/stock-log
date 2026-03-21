@@ -2,9 +2,12 @@ import ReactECharts from 'echarts-for-react';
 import { useEffect, useMemo, useState } from 'react';
 import { Card, Typography } from '@mui/material';
 import { StocksDB } from '@/lib/db';
+import { useAtomValue } from 'jotai';
+import { lastHashAtom } from '@/store/excel';
 
 export default function StockProportionPieChart() {
   const [pieData, setPieData] = useState<PieData[]>([]);
+  const lastHash = useAtomValue(lastHashAtom);
 
   useEffect(()=>{
     async function getData(){
@@ -21,7 +24,7 @@ export default function StockProportionPieChart() {
       setPieData(data);
     }
     getData();
-  },[]);
+  },[lastHash]);
 
   const currentStocksOption = useMemo(()=>{
     return {

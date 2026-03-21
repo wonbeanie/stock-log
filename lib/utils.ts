@@ -53,7 +53,7 @@ export const formatReturnRate = (stock : CurrentStock, stocksPrice : StocksPrice
   return Math.round(result * 100) / 100;
 }
 
-export const readFilesAsBuffer = async (files: FileList) => {
+export const readFilesAsBuffer = async (files: FileList) : Promise<WorkerMessage | null> => {
   try {
     const buffers = await Promise.all(
       Array.from(files).map((file) => file.arrayBuffer())
@@ -110,4 +110,10 @@ export const formatCurrentStocksPrice = (
   });
 
   return result;
+}
+
+export interface WorkerMessage {
+  type : string;
+  count : number;
+  newHash : string;
 }
