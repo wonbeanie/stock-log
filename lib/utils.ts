@@ -1,7 +1,6 @@
-import { CurrentStock, CurrentStocks, StocksData } from "@/store/stocks";
-import { excelData } from "./excel";
-import { PriceInfo, StocksPrice } from "@/store/price";
-import * as XLSX from 'xlsx';
+import type { CurrentStock, CurrentStocks } from "@/store/stocks";
+import type { excelData } from "./excel";
+import type { StocksPrice } from "@/store/price";
 
 export const getHash = (data : excelData[]) => {
   if(data.length < 3){
@@ -11,14 +10,6 @@ export const getHash = (data : excelData[]) => {
   const lastTrandedDate = data[data.length-2]["거래일자"] + data[data.length-1]["거래일자"];
   
   return `len:${firstTrandedDate}-${lastTrandedDate}-${data.length}`;
-}
-
-export const getDateOfPossession = (buyDate : string) => {
-  let firstBuy = new Date(buyDate).getTime();
-  let nowDate = Date.now();
-  let diff = nowDate - firstBuy;
-  let diffDays = Math.ceil(diff / (1000 * 3600 * 24));
-  return diffDays;
 }
 
 export const formatTimestamp = (timestamp : number = Date.now()) => {
@@ -44,10 +35,6 @@ export const formatTimestamp = (timestamp : number = Date.now()) => {
   return `${year}-${formatMonth}-${formatDay} ${formatHours}:${formatMinutes}:${formatSeconds}`;
 }
 
-export const formatDate = (excelDate : string) => {
-  return excelDate.replaceAll("(", "").replaceAll(")", "");
-}
-
 export const formatReturnRate = (stock : CurrentStock, stocksPrice : StocksPrice, exchangeRate = 1450) => {
   const price = stocksPrice[stock.ticker];
 
@@ -67,35 +54,47 @@ export const formatReturnRate = (stock : CurrentStock, stocksPrice : StocksPrice
 }
 
 export const readFilesAsBuffer = async (files: FileList) => {
-  const promises = Array.from(files).map((file) => {
-    return new Promise((resolve)=>{
-      const reader = new FileReader();
-    
-      reader.onload = (evt) => {
-        const data = evt.target?.result;
-        if (!data) return;
+  try {
+    const buffers = await Promise.all(
+      Array.from(files).map((file) => file.arrayBuffer())
+    )
 
-        const worker = new Worker(new URL('./worker.ts', import.meta.url));
-        worker.postMessage(data, [data as ArrayBuffer]);
+    return new Promise((resolve, reject) => {
+      const worker = new Worker(new URL('./worker.ts', import.meta.url));
+      worker.postMessage({buffers}, buffers);
 
-        worker.onmessage = (e) => {
+      worker.onmessage = (e) => {
+        if (e.data.type === 'DONE') {
           resolve(e.data);
           worker.terminate();
+        } else if (e.data.type === 'ERROR') {
+          reject(e.data.err);
+          worker.terminate();
         }
-      };
+      }
 
-      reader.readAsArrayBuffer(file);
-    }) as Promise<excelData[]>;
+      worker.onerror = (err) => {
+        reject(err);
+        worker.terminate();
+      }
+    });
+  }
+  catch(err){
+    console.error(err);
+    return null;
+  }
+}
+
+export const updateExchangeRatio = async (exchangeRate : number) => {
+  return new Promise((resolve, reject) => {
+    const worker = new Worker(new URL('./worker.ts', import.meta.url));
+    worker.postMessage(exchangeRate);
+
+    worker.onmessage = (e) => {
+      resolve(e.data);
+      worker.terminate();
+    }
   })
-
-  try {
-    const results = await Promise.all(promises);
-    return results;
-  }
-  catch (err) {
-    console.log(err);
-    return [];
-  }
 }
 
 export const formatCurrentStocksPrice = (

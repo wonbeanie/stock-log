@@ -1,10 +1,8 @@
 import { atom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
-import { excelDatAtom } from "./excel";
-import { currentStocksAtom, stocksDataAtom } from "./stocks";
-import { processExcelData } from "@/lib/excel";
+import { currentStocksAtom } from "./stocks";
 import { stocksLoadingAtom } from "./baseAtoms";
-import { formatCurrentStocksPrice } from "@/lib/utils";
+import { formatCurrentStocksPrice, updateExchangeRatio } from "@/lib/utils";
 
 export const exchangeRateAtom = atomWithStorage<number>(
   "EXCHANGE_RATE", 1450 , undefined, { getOnInit: true }
@@ -17,11 +15,8 @@ export const stocksPriceAtom = atomWithStorage<PriceInfo>("STOCKS_PRICE", {
 
 export const updateExchangeRatioAtom = atom(
   null,
-  (get, set, exchangeRate : number) => {
-    const excelData = get(excelDatAtom);
-    const stocksData = processExcelData(excelData, exchangeRate);
-
-    set(stocksDataAtom, stocksData);
+  async (get, set, exchangeRate : number) => {
+    await updateExchangeRatio(exchangeRate);
     set(exchangeRateAtom, exchangeRate);
   }
 )

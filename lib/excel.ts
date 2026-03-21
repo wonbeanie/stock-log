@@ -1,5 +1,5 @@
-import { CurrentStocks, PastSale, StocksData } from "@/store/stocks";
-import { formatDate, getDateOfPossession } from "./utils";
+import type { CurrentStocks, PastSale, StocksData } from "@/store/stocks";
+import { formatDate, getDateOfPossession } from "./worker-utils";
 
 export const processExcelData = (excelData : excelData[], exchangeRate = 1450) => {
   const result = formatExcelData(excelData);

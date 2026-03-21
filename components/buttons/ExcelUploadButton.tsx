@@ -19,9 +19,9 @@ export default function ExcelUploadButton() {
     const files = e.target.files;
     if (!files) return;
 
-    const excelsData = await readFilesAsBuffer(files);
+    const data = await readFilesAsBuffer(files);
 
-    setExcelData(excelsData.flat());
+    console.log(data);
   };
 
   return (

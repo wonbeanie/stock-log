@@ -24,7 +24,7 @@ export default function ExchangeRateModal({open, onClose} : Props) {
   const updateExchangeRatio = useSetAtom(updateExchangeRatioAtom);
 
   const handleSave = async () => {
-    updateExchangeRatio(rate);
+    await updateExchangeRatio(rate);
     onClose();
   };
 
