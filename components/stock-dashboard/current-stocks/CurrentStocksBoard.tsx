@@ -6,9 +6,9 @@ import { useAtomValue } from 'jotai';
 import { stocksPriceAtom } from '@/store/price';
 import {useSortedCurrentStocks} from '@/hooks/useCurrentStocks';
 import HeaderReturnRate from './HeaderReturnRate';
-import CurrentStock from './CurrentStock';
 import TradeDetailModal from '@/components/modals/TradeDetailModal';
 import { useCallback, useState } from 'react';
+import StocksScrollView from './StocksScrollView';
 
 export default function CurrentStocksBoard() {
   const {updateDate, stocksPrice} = useAtomValue(stocksPriceAtom);
@@ -45,19 +45,7 @@ export default function CurrentStocksBoard() {
                 <HeaderReturnRate stocksPrice={stocksPrice} onHandlerSort={onHandlerSort("returnRate")}/>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
-              {
-                sortedCurrentStocks.map(([stockName, stock], i) => {
-                  return (
-                    <tr key={stockName}
-                        className="hover:bg-gray-50/50 transition-colors group cursor-pointer"
-                        onClick={() => onHandlerStock({name : stockName, ticker : stock.ticker})}>
-                      <CurrentStock key={stockName} stockName={stockName} stock={stock}/>
-                    </tr>
-                  )
-                })
-              }
-            </tbody>
+            <StocksScrollView data={sortedCurrentStocks} onHandlerStock={onHandlerStock} />
           </table>
         </div>
       </Card>
@@ -66,7 +54,7 @@ export default function CurrentStocksBoard() {
   )
 }
 
-interface SelectedStock {
+export interface SelectedStock {
   name : string;
   ticker : string;
 }

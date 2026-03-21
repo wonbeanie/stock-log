@@ -75,3 +75,5 @@ function sortingSetting(
     return 0;
   }
 }
+
+export type SortedCurrentStocks = [string, CurrentStock][];
