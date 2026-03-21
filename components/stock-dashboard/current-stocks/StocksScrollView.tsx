@@ -2,9 +2,9 @@
 
 import React, { useRef } from 'react'
 import CurrentStock from './CurrentStock'
-import { SortedCurrentStocks } from '@/hooks/useCurrentStocks'
 import { SelectedStock } from './CurrentStocksBoard'
 import { useVirtualizer } from "@tanstack/react-virtual";
+import { CurrentStockTable } from '@/lib/db'
 
 export default function StocksScrollView({data, onHandlerStock} : Props) {
   const parentRef = useRef<HTMLTableSectionElement>(null);
@@ -22,12 +22,12 @@ export default function StocksScrollView({data, onHandlerStock} : Props) {
       position: 'relative',
     }}>
       {rowVirtualizer.getVirtualItems().map((virtualRow) => {
-          const [stockName, stock] = data[virtualRow.index];
+          const stock = data[virtualRow.index];
           return (
-            <tr key={stockName}
+            <tr key={stock.name}
                 className="hover:bg-gray-50/50 transition-colors group cursor-pointer"
-                onClick={() => onHandlerStock({name : stockName, ticker : stock.ticker})}>
-              <CurrentStock key={stockName} stockName={stockName} stock={stock}/>
+                onClick={() => onHandlerStock({name : stock.name, ticker : stock.ticker})}>
+              <CurrentStock key={stock.name} stockName={stock.name} stock={stock}/>
             </tr>
           );
         })}
@@ -37,6 +37,6 @@ export default function StocksScrollView({data, onHandlerStock} : Props) {
 
 
 interface Props {
-  data : SortedCurrentStocks,
+  data : CurrentStockTable[],
   onHandlerStock : (stock : SelectedStock) => void;
 }

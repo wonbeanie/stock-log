@@ -5,7 +5,7 @@ import { useServerCheck } from '@/hooks/useServerStatus';
 import { useStocksPriceData } from '@/hooks/useStockPrice';
 import { isOfflineAtom, updateLoadingAtom } from '@/store/baseAtoms';
 import { useSetAtom } from 'jotai';
-import { stocksPriceAtom, updateStocksPriceAtom } from '@/store/price';
+import { updateStocksPriceAtom } from '@/store/price';
 
 export default function GlobalSetup({ children }: { children: ReactNode }) {
   const {isSuccess, isError} = useServerCheck();

@@ -1,10 +1,6 @@
 import { atom } from "jotai";
-import { atomWithStorage } from "jotai/utils";
-import { excelDatAtom, lastHashAtom } from "./excel";
-import { excelData, processExcelData } from "@/lib/excel";
-import { getHash } from "@/lib/utils";
 
-export const stocksDataAtom = atomWithStorage<StocksData>("STOCKS_DATA", {
+export const stocksDataAtom = atom<StocksData>({
   totalInvestment : 0,
   currentInvestment : 0,
   realizedProfit : 0,
@@ -39,22 +35,6 @@ export const summaryOverviewAtom = atom((get) => ({
   profit: get(realizedProfitAtom),
   dividend: get(dividendAtom),
 }));
-
-export const updateStocksDataAtom = atom(
-  null,
-  (get, set, excelData : excelData[]) => {
-    const newHash = getHash(excelData);
-    if(newHash === get(lastHashAtom)){
-      return;
-    }
-
-    const stocksData = processExcelData(excelData);
-
-    set(excelDatAtom, excelData);
-    set(stocksDataAtom, stocksData);
-    set(lastHashAtom, newHash)
-  }
-)
 
 export interface StocksData {
   totalInvestment : number;

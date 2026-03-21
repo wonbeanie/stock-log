@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -14,6 +14,7 @@ import HistoryIcon from '@mui/icons-material/History';
 import { useAtomCallback } from 'jotai/utils';
 import { PastSale, pastSalesAtom } from '@/store/stocks';
 import History from './trade-detail/History';
+import { StocksDB } from '@/lib/db';
 
 export default function TradeDetailModal({open, onClose, stockInfo} : Props) {
   const [tradeHistory, setTradeHistory] = useState<PastSale[]>([]);
@@ -23,16 +24,16 @@ export default function TradeDetailModal({open, onClose, stockInfo} : Props) {
   },[stockInfo.name]);
 
   const updateHistory = useCallback(async () => {
-    const tradeHistory = getTradeHistory(stockInfo.name);
-    setTradeHistory(tradeHistory);
+    async function getData() {
+      const data = await getTradeHistory(stockInfo.name);
+      setTradeHistory(data);
+    }
+    getData();
   }, [stockInfo.name])
 
-  const getTradeHistory = useAtomCallback(
-    (get, set, stockName : string) => {
-      const pastSales = get(pastSalesAtom);
-      return pastSales.filter((history) => history.name === stockName);
-    }
-  )
+  const getTradeHistory = useCallback((stockName : string) => {
+    return StocksDB.pastSales.filter((history) => history.name === stockName).toArray();
+  }, [])
 
   return (
     <Dialog 

@@ -3,13 +3,10 @@
 import React, { useRef } from 'react';
 import { Button } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import { useSetAtom } from 'jotai';
-import { updateStocksDataAtom } from '@/store/stocks';
 import { readFilesAsBuffer } from '@/lib/utils';
 
 export default function ExcelUploadButton() {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const setExcelData = useSetAtom(updateStocksDataAtom);
 
   const handleButtonClick = () => {
     fileInputRef.current?.click();
@@ -20,8 +17,6 @@ export default function ExcelUploadButton() {
     if (!files) return;
 
     const data = await readFilesAsBuffer(files);
-
-    console.log(data);
   };
 
   return (
