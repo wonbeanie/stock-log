@@ -7,10 +7,11 @@ import { WorkerMessage, WorkerStatus } from './worker-message';
 
 self.onmessage = async (e) => {
   try{
-    const stocksPrice = e.data.payload as StocksPrice;
+    const stocksPrice = e.data.payload.stocksPrice as StocksPrice;
+    const exchangeRate = e.data.payload.exchangeRate as number;
     const currentStocks = await StocksDB.currentStocks.toArray();
     const newCurrentStocks = currentStocks.map((stock)=>{
-      const returnRate = formatReturnRate(stock, stocksPrice, 1450);
+      const returnRate = formatReturnRate(stock, stocksPrice, exchangeRate);
       return {
         ...stock,
         returnRate

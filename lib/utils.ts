@@ -99,10 +99,13 @@ export const updateExchangeRatio = async (exchangeRate : number) => {
   })
 }
 
-export const updateCurrentStocksPrice = async (priceInfo : PriceInfo) => {
+export const updateCurrentStocksPrice = async (priceInfo : PriceInfo, exchangeRate : number) => {
   return new Promise((resolve, reject) => {
     const worker = new Worker(new URL('./worker/price-worker.ts', import.meta.url));
-    worker.postMessage(new WorkerMessage(WorkerStatus.PROCESS_PRICE, priceInfo.stocksPrice));
+    worker.postMessage(new WorkerMessage(WorkerStatus.PROCESS_PRICE, {
+      stocksPrice : priceInfo.stocksPrice,
+      exchangeRate
+    }));
 
     worker.onmessage = (e) => {
       resolve(e.data);

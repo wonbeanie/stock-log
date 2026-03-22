@@ -4,8 +4,8 @@ import React, { ReactNode, useEffect, useState } from 'react'
 import { useServerCheck } from '@/hooks/useServerStatus';
 import { useStocksPriceData } from '@/hooks/useStockPrice';
 import { isOfflineAtom, updateLoadingAtom } from '@/store/baseAtoms';
-import { useSetAtom } from 'jotai';
-import { PriceInfo, updateStocksPriceAtom } from '@/store/price';
+import { useAtomValue, useSetAtom } from 'jotai';
+import { exchangeRateAtom, PriceInfo, updateStocksPriceAtom } from '@/store/price';
 import { updateCurrentStocksPrice } from '@/lib/utils';
 
 export default function GlobalSetup({ children }: { children: ReactNode }) {
@@ -14,6 +14,7 @@ export default function GlobalSetup({ children }: { children: ReactNode }) {
   const {priceInfo, isComplete, isLoading} = useStocksPriceData();
   const updateStocksPrice = useSetAtom(updateStocksPriceAtom);
   const updateLoading = useSetAtom(updateLoadingAtom);
+  const exchangeRate = useAtomValue(exchangeRateAtom);
 
   useEffect(()=>{
     if(isSuccess){
@@ -37,11 +38,11 @@ export default function GlobalSetup({ children }: { children: ReactNode }) {
       requestUpdateStocksPrice(priceInfo);
       return;
     }
-  },[isLoading, isComplete, priceInfo, updateStocksPrice, updateLoading])
+  },[isLoading, isComplete, priceInfo, exchangeRate, updateStocksPrice, updateLoading])
 
 
   const requestUpdateStocksPrice = async (priceInfo : PriceInfo) => {
-    await updateCurrentStocksPrice(priceInfo);
+    await updateCurrentStocksPrice(priceInfo, exchangeRate);
     updateStocksPrice(priceInfo);
   }
 
