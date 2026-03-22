@@ -71,6 +71,7 @@ export const updateStocksData = async (files: FileList) : Promise<StocksDataWork
         } else if (e.data.type === WorkerStatus.ERROR) {
           reject(e.data.err);
           worker.terminate();
+          alert("업데이트에 실패하였습니다.");
         }
       }
 
@@ -87,14 +88,20 @@ export const updateStocksData = async (files: FileList) : Promise<StocksDataWork
   }
 }
 
-export const updateExchangeRatio = async (exchangeRate : number) => {
+export const updateWorkerExchangeRatio = async (exchangeRate : number) => {
   return new Promise((resolve, reject) => {
     const worker = new Worker(new URL('./worker/worker.ts', import.meta.url));
     worker.postMessage(new WorkerMessage(WorkerStatus.EXCHANGE_RATIO, exchangeRate));
 
     worker.onmessage = (e) => {
-      resolve(e.data);
-      worker.terminate();
+      if (e.data.type === WorkerStatus.DONE) {
+        resolve(e.data);
+        worker.terminate();
+      } else if (e.data.type === WorkerStatus.ERROR) {
+        reject(e.data.err);
+        worker.terminate();
+        alert("업데이트에 실패하였습니다.");
+      }
     }
   })
 }
@@ -108,8 +115,14 @@ export const updateCurrentStocksPrice = async (priceInfo : PriceInfo, exchangeRa
     }));
 
     worker.onmessage = (e) => {
-      resolve(e.data);
-      worker.terminate();
+      if (e.data.type === WorkerStatus.DONE) {
+        resolve(e.data);
+        worker.terminate();
+      } else if (e.data.type === WorkerStatus.ERROR) {
+        reject(e.data.err);
+        worker.terminate();
+        alert("업데이트에 실패하였습니다.");
+      }
     }
   })
 }

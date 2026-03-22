@@ -42,8 +42,13 @@ export default function GlobalSetup({ children }: { children: ReactNode }) {
 
 
   const requestUpdateStocksPrice = async (priceInfo : PriceInfo) => {
-    await updateCurrentStocksPrice(priceInfo, exchangeRate);
-    updateStocksPrice(priceInfo);
+    try {
+      await updateCurrentStocksPrice(priceInfo, exchangeRate);
+      updateStocksPrice(priceInfo);
+    }
+    catch(err){
+      console.error(err);
+    }
   }
 
 

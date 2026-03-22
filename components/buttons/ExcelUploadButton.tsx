@@ -19,11 +19,18 @@ export default function ExcelUploadButton() {
     const files = e.target.files;
     if (!files) return;
 
-    const data = await updateStocksData(files);
+    try{
+      const data = await updateStocksData(files);
 
-    if(!data) return;
+      if(!data) return;
 
-    setLastHash(data.newHash);
+      setLastHash(data.newHash);
+    }
+    catch(err){
+      console.error(err);
+    }
+
+    e.target.value = "";
   };
 
   return (
