@@ -1,6 +1,6 @@
 import type { CurrentStock, CurrentStocks } from "@/store/stocks";
 import type { excelData } from "./excel";
-import type { StocksPrice } from "@/store/price";
+import type { PriceInfo, StocksPrice } from "@/store/price";
 
 export const getHash = (data : excelData[]) => {
   if(data.length < 3){
@@ -89,6 +89,18 @@ export const updateExchangeRatio = async (exchangeRate : number) => {
   return new Promise((resolve, reject) => {
     const worker = new Worker(new URL('./worker.ts', import.meta.url));
     worker.postMessage(exchangeRate);
+
+    worker.onmessage = (e) => {
+      resolve(e.data);
+      worker.terminate();
+    }
+  })
+}
+
+export const updateCurrentStocksPrice = async (priceInfo : PriceInfo) => {
+  return new Promise((resolve, reject) => {
+    const worker = new Worker(new URL('./price-worker.ts', import.meta.url));
+    worker.postMessage(priceInfo);
 
     worker.onmessage = (e) => {
       resolve(e.data);

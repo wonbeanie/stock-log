@@ -23,12 +23,7 @@ export const updateExchangeRatioAtom = atom(
 
 export const updateStocksPriceAtom = atom(
   null,
-  (get, set, priceInfo : PriceInfo) => {
-    const currentStocks = get(currentStocksAtom);
-    const exchangeRate = get(exchangeRateAtom);
-    const newCurrentStocks = formatCurrentStocksPrice(currentStocks, priceInfo.stocksPrice, exchangeRate);
-
-    set(currentStocksAtom, newCurrentStocks);
+  (get, set, priceInfo: PriceInfo) => {
     set(stocksPriceAtom, priceInfo);
     set(stocksLoadingAtom, false);
   }
