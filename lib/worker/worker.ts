@@ -7,6 +7,7 @@ import type { excelData } from '../excel';
 import { StocksDB, SUMMARY_INFO_KEYS } from '../db';
 import type { StocksData } from '../../store/stocks';
 import { getHash } from './worker-utils';
+import { WorkerMessage, WorkerStatus } from './worker-message';
 
 self.onmessage = async (e) => {
   try{
@@ -14,8 +15,8 @@ self.onmessage = async (e) => {
     let stocksData : StocksData = {} as StocksData;
     let newHash = "";
 
-    if(typeof e.data !== "number"){
-      const { buffers } = e.data as { buffers: ArrayBuffer[] };
+    if(e.data.type === WorkerStatus.PROCESS_EXCEL){
+      const buffers = e.data.payload as ArrayBuffer[];
       if (!buffers) return;
       let combinedData = [];
       for (const buffer of buffers) {
@@ -33,7 +34,7 @@ self.onmessage = async (e) => {
     }
     else {
       data = await get('EXCEL_DATA') || [];
-      const exchangeRate = e.data;
+      const exchangeRate = e.data.payload;
       stocksData = processExcelData(data, exchangeRate);
     }
 
@@ -56,10 +57,12 @@ self.onmessage = async (e) => {
 
     await StocksDB.currentStocks.bulkAdd(Object.values(stocksData.currentStocks));
     await StocksDB.pastSales.bulkAdd(stocksData.pastSales);
-    self.postMessage({ type : 'DONE', count : data.length, newHash});
+    self.postMessage(new WorkerMessage(WorkerStatus.DONE, {
+      newHash
+    }))
   }
   catch(err){
     console.error(err);
-    self.postMessage({ type : 'ERROR', err});
+    self.postMessage(new WorkerMessage(WorkerStatus.ERROR, null, err));
   }
 }

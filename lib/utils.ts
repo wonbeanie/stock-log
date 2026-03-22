@@ -1,6 +1,7 @@
 import type { CurrentStock, CurrentStocks } from "@/store/stocks";
 import type { excelData } from "./excel";
 import type { PriceInfo, StocksPrice } from "@/store/price";
+import { WorkerMessage, WorkerStatus } from "./worker/worker-message";
 
 export const getHash = (data : excelData[]) => {
   if(data.length < 3){
@@ -53,7 +54,7 @@ export const formatReturnRate = (stock : CurrentStock, stocksPrice : StocksPrice
   return Math.round(result * 100) / 100;
 }
 
-export const readFilesAsBuffer = async (files: FileList) : Promise<WorkerMessage | null> => {
+export const updateStocksData = async (files: FileList) : Promise<StocksDataWorkerMessage | null> => {
   try {
     const buffers = await Promise.all(
       Array.from(files).map((file) => file.arrayBuffer())
@@ -61,19 +62,20 @@ export const readFilesAsBuffer = async (files: FileList) : Promise<WorkerMessage
 
     return new Promise((resolve, reject) => {
       const worker = new Worker(new URL('./worker/worker.ts', import.meta.url));
-      worker.postMessage({buffers}, buffers);
+      worker.postMessage(new WorkerMessage(WorkerStatus.PROCESS_EXCEL, buffers), buffers);
 
       worker.onmessage = (e) => {
-        if (e.data.type === 'DONE') {
-          resolve(e.data);
+        if (e.data.type === WorkerStatus.DONE) {
+          resolve(e.data.payload as StocksDataWorkerMessage);
           worker.terminate();
-        } else if (e.data.type === 'ERROR') {
+        } else if (e.data.type === WorkerStatus.ERROR) {
           reject(e.data.err);
           worker.terminate();
         }
       }
 
       worker.onerror = (err) => {
+        console.error(err);
         reject(err);
         worker.terminate();
       }
@@ -88,7 +90,7 @@ export const readFilesAsBuffer = async (files: FileList) : Promise<WorkerMessage
 export const updateExchangeRatio = async (exchangeRate : number) => {
   return new Promise((resolve, reject) => {
     const worker = new Worker(new URL('./worker/worker.ts', import.meta.url));
-    worker.postMessage(exchangeRate);
+    worker.postMessage(new WorkerMessage(WorkerStatus.EXCHANGE_RATIO, exchangeRate));
 
     worker.onmessage = (e) => {
       resolve(e.data);
@@ -100,7 +102,7 @@ export const updateExchangeRatio = async (exchangeRate : number) => {
 export const updateCurrentStocksPrice = async (priceInfo : PriceInfo) => {
   return new Promise((resolve, reject) => {
     const worker = new Worker(new URL('./worker/price-worker.ts', import.meta.url));
-    worker.postMessage(priceInfo);
+    worker.postMessage(new WorkerMessage(WorkerStatus.PROCESS_PRICE, priceInfo.stocksPrice));
 
     worker.onmessage = (e) => {
       resolve(e.data);
@@ -124,8 +126,6 @@ export const formatCurrentStocksPrice = (
   return result;
 }
 
-export interface WorkerMessage {
-  type : string;
-  count : number;
+interface StocksDataWorkerMessage {
   newHash : string;
 }
