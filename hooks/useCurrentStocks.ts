@@ -1,5 +1,6 @@
 import { CurrentStockTable, StocksDB } from "@/lib/db";
 import { lastHashAtom } from "@/store/excel";
+import { useLiveQuery } from "dexie-react-hooks";
 import { useAtomValue } from "jotai";
 import { useCallback, useMemo, useState } from "react";
 
@@ -7,23 +8,14 @@ export function useSortedCurrentStocks(){
   const [sortType, setSortType] = useState<string>("name");
   const [orderType, setOrderType] = useState<string>("ASC");
   const lastHash = useAtomValue(lastHashAtom);
-
-  const sortedCurrentStocks = useMemo(async ()=>{
-    let data : CurrentStockTable[] = [];
-    if(orderType === "ASC"){
-      data = await StocksDB.currentStocks
-      .orderBy(sortType)
-      .toArray();
-    }
-    else {
-      data = await StocksDB.currentStocks
-      .orderBy(sortType)
-      .reverse()
-      .toArray();
+  const sortedCurrentStocks = useLiveQuery(() => {
+    let query = StocksDB.currentStocks.orderBy(sortType);
+    if(orderType === "DESC"){
+      query.reverse()
     }
 
-    return data;
-  }, [sortType, orderType, lastHash]);
+    return query.toArray();
+  }, [sortType, orderType, lastHash]) || [];
 
   const onHandlerSort = useCallback((type : string) => {
     return (e : React.MouseEvent<HTMLTableCellElement>) => {

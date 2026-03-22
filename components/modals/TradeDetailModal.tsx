@@ -1,6 +1,5 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -11,29 +10,16 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import HistoryIcon from '@mui/icons-material/History';
-import { useAtomCallback } from 'jotai/utils';
-import { PastSale, pastSalesAtom } from '@/store/stocks';
 import History from './trade-detail/History';
 import { StocksDB } from '@/lib/db';
+import { useLiveQuery } from 'dexie-react-hooks';
 
 export default function TradeDetailModal({open, onClose, stockInfo} : Props) {
-  const [tradeHistory, setTradeHistory] = useState<PastSale[]>([]);
-
-  useEffect(()=>{
-    updateHistory();
-  },[stockInfo.name]);
-
-  const updateHistory = useCallback(async () => {
-    async function getData() {
-      const data = await getTradeHistory(stockInfo.name);
-      setTradeHistory(data);
-    }
-    getData();
-  }, [stockInfo.name])
-
-  const getTradeHistory = useCallback((stockName : string) => {
-    return StocksDB.pastSales.filter((history) => history.name === stockName).toArray();
-  }, [])
+  const tradeHistory = useLiveQuery(() => {
+    return StocksDB.pastSales
+          .filter((history) => history.name === stockInfo.name)
+          .toArray();
+  }, [stockInfo.name]) || [];
 
   return (
     <Dialog 

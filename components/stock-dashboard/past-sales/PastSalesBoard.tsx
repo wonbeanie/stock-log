@@ -9,6 +9,7 @@ import { useCallback, useEffect, useState } from 'react';
 import PastStocksScrollView from './PastStocksScrollView';
 import { StocksDB } from '@/lib/db';
 import { lastHashAtom } from '@/store/excel';
+import { useLiveQuery } from 'dexie-react-hooks';
 
 export default function PastSalesBoard() {
   const [open, setOpen] = useState(false);
@@ -16,16 +17,10 @@ export default function PastSalesBoard() {
     name : "",
     ticker : ""
   });
-  const [pastSales, setPastSales] = useState<PastSale[]>([]);
   const lastHash = useAtomValue(lastHashAtom);
-  
-  useEffect(()=>{
-    async function getData(){
-      const pastSales = await StocksDB.pastSales.toArray();
-      setPastSales(pastSales);
-    }
-    getData();
-  },[lastHash]);
+  const pastSales = useLiveQuery(() => {
+    return StocksDB.pastSales.toArray();
+  }, [lastHash]) || [];
 
   const onHandlerModal = useCallback(() => {
     setOpen(!open);

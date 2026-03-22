@@ -3,33 +3,23 @@
 import { formatChartData } from '@/lib/chart';
 import { formatTimestamp } from '@/lib/utils';
 import { exchangeRateAtom, stocksPriceAtom } from '@/store/price';
-import { CurrentStocks, stockDashboardAtom } from '@/store/stocks';
 import { Card, Chip, Typography } from '@mui/material'
 import ReactECharts from 'echarts-for-react';
 import { useAtomValue } from 'jotai';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import ToolTip from './ToolTip';
 import ReactDOMServer from 'react-dom/server';
-import { CurrentStockTable, StocksDB } from '@/lib/db';
+import {  StocksDB } from '@/lib/db';
 import { lastHashAtom } from '@/store/excel';
+import { useLiveQuery } from 'dexie-react-hooks';
 
 export default function RateOfReturnBarChart() {
   const {stocksPrice, updateDate} = useAtomValue(stocksPriceAtom);
   const exchangeRate = useAtomValue(exchangeRateAtom);
-  const [currentStocks, setCurrentStocks] = useState<CurrentStockTable[]>([]);
   const lastHash = useAtomValue(lastHashAtom);
-
-  useEffect(()=>{
-    async function getData(){
-      const stocks = await StocksDB.currentStocks
-      .orderBy('amountInput')
-      .reverse()
-      .toArray();
-      
-      setCurrentStocks(stocks);
-    }
-    getData();
-  }, [lastHash]);
+  const currentStocks = useLiveQuery(() => {
+    return StocksDB.currentStocks.orderBy('amountInput').reverse().toArray();
+  }, [lastHash]) || [];
 
   const {chartData, options} = useMemo(()=>{
     const {chartData, yAxisData} = formatChartData(currentStocks, stocksPrice, exchangeRate);

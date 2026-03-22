@@ -8,51 +8,19 @@ import SummaryCard from './summary-info/SummaryCard';
 import ServerStatusBadge from './summary-info/ServerStatusBadge';
 import { useAtomValue } from 'jotai';
 import { isOfflineAtom } from '@/store/baseAtoms';
-import { useEffect, useMemo, useState } from 'react';
-import { StocksDB } from '@/lib/db';
-import { lastHashAtom } from '@/store/excel';
+import { useMemo } from 'react';
+import { useSummaryInfo } from '@/hooks/useSummaryInfo';
 
 export default function SummaryInfo() {
-  const [summaryOverview, setSummaryOverview] = useState<SummaryOverview>({
-    total: 0,
-    current: 0,
-    profit: 0,
-    dividend: 0
-  });
+  const summaryInfo = useSummaryInfo();
   const isOffline = useAtomValue(isOfflineAtom);
-  const lastHash = useAtomValue(lastHashAtom);
-
-  useEffect(()=>{
-    function getSummaryOverview(){
-      return new Promise(async (resolve, reject)=>{
-        const totalInvestment = StocksDB.totalInvestment.toArray();
-        const currentInvestment = StocksDB.currentInvestment.toArray();
-        const realizedProfit = StocksDB.realizedProfit.toArray();
-        const dividend = StocksDB.dividend.toArray();
-
-        const data = await Promise.all([totalInvestment, currentInvestment, realizedProfit, dividend]);
-
-        const summaryOverview = Object.fromEntries(
-          data.map((item)=> [item[0].key, item[0].value]
-        ))
-
-        resolve(summaryOverview);
-      });
-    }
-
-    async function getData(){      
-      const data = await getSummaryOverview() as SummaryOverview;
-      setSummaryOverview(data);
-    }
-    getData();
-  }, [lastHash]);
 
   const summaryItems = useMemo(()=>[
-    { label: '총 투자 금액', value: summaryOverview.total, unit: '원', color: 'text-gray-900' },
-    { label: '현재 투자 금액', value: summaryOverview.current, unit: '원', color: 'text-blue-600' },
-    { label: '실현 수익률', value: summaryOverview.profit, unit: '%', color: 'text-red-500' },
-    { label: '누적 배당금', value: summaryOverview.dividend, unit: '원', color: 'text-emerald-600' },
-  ], [summaryOverview]);
+    { label: '총 투자 금액', value: summaryInfo.total, unit: '원', color: 'text-gray-900' },
+    { label: '현재 투자 금액', value: summaryInfo.current, unit: '원', color: 'text-blue-600' },
+    { label: '실현 수익률', value: summaryInfo.profit, unit: '%', color: 'text-red-500' },
+    { label: '누적 배당금', value: summaryInfo.dividend, unit: '원', color: 'text-emerald-600' },
+  ], [summaryInfo]);
 
   return (
     <>
@@ -83,12 +51,4 @@ export default function SummaryInfo() {
       </Grid>
     </>
   )
-}
-
-
-interface SummaryOverview {
-  total: number;
-  current: number;
-  profit: number;
-  dividend: number;
 }

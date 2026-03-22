@@ -4,27 +4,24 @@ import { Card, Typography } from '@mui/material';
 import { StocksDB } from '@/lib/db';
 import { useAtomValue } from 'jotai';
 import { lastHashAtom } from '@/store/excel';
+import { useLiveQuery } from 'dexie-react-hooks';
 
 export default function StockProportionPieChart() {
-  const [pieData, setPieData] = useState<PieData[]>([]);
   const lastHash = useAtomValue(lastHashAtom);
-
-  useEffect(()=>{
-    async function getData(){
-      const data = (await StocksDB.currentStocks
+  const pieData = useLiveQuery(() => {
+    return StocksDB.currentStocks
           .orderBy('amountInput')
           .reverse()
           .toArray()
-        ).map((stock) => {
-          return {
-            name: stock.name,
-            value: stock.amountInput
-          }
-        })
-      setPieData(data);
-    }
-    getData();
-  },[lastHash]);
+          .then((data) => {
+            return data.map((stock)=>{
+              return {
+                name: stock.name,
+                value: stock.amountInput
+              }
+            });
+          });
+  }, [lastHash]) || [];
 
   const currentStocksOption = useMemo(()=>{
     return {

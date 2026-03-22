@@ -4,7 +4,7 @@ import { read, utils } from 'xlsx';
 import { clear, get, set } from 'idb-keyval';
 import { processExcelData } from '../excel';
 import type { excelData } from '../excel';
-import { StocksDB } from '../db';
+import { StocksDB, SUMMARY_INFO_KEYS } from '../db';
 import type { StocksData } from '../../store/stocks';
 import { getHash } from './worker-utils';
 
@@ -42,18 +42,17 @@ self.onmessage = async (e) => {
     }
 
     await Promise.all([
-      StocksDB.totalInvestment.clear(),
-      StocksDB.currentInvestment.clear(),
-      StocksDB.realizedProfit.clear(),
-      StocksDB.dividend.clear(),
+      StocksDB.summaryInfo.clear(),
       StocksDB.currentStocks.clear(),
       StocksDB.pastSales.clear(),
     ]);
 
-    await StocksDB.totalInvestment.add({ id: 'main', key: "total", value: stocksData.totalInvestment });
-    await StocksDB.currentInvestment.add({ id: 'main', key: "current", value: stocksData.currentInvestment });
-    await StocksDB.realizedProfit.add({ id: 'main', key: "profit", value: stocksData.realizedProfit });
-    await StocksDB.dividend.add({ id: 'main', key: "dividend", value: stocksData.dividend });
+    const {currentStocks, pastSales, ...summaryInfo} = stocksData;
+
+    await StocksDB.summaryInfo.add({ id : SUMMARY_INFO_KEYS.TOTAL, value : summaryInfo.totalInvestment});
+    await StocksDB.summaryInfo.add({ id : SUMMARY_INFO_KEYS.CURRENT, value : summaryInfo.currentInvestment});
+    await StocksDB.summaryInfo.add({ id : SUMMARY_INFO_KEYS.PROFIT, value : summaryInfo.realizedProfit});
+    await StocksDB.summaryInfo.add({ id : SUMMARY_INFO_KEYS.DIVIDEND, value : summaryInfo.dividend});
 
     await StocksDB.currentStocks.bulkAdd(Object.values(stocksData.currentStocks));
     await StocksDB.pastSales.bulkAdd(stocksData.pastSales);

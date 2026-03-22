@@ -11,26 +11,19 @@ export interface PastSaleTable extends PastSale {
 
 export interface SummaryData {
   id: string;
-  key : string;
   value: number;
 }
 
 class StocksDatabase extends Dexie {
-  totalInvestment!: EntityTable<SummaryData, 'id'>;
-  currentInvestment!: EntityTable<SummaryData, 'id'>;
-  realizedProfit!: EntityTable<SummaryData, 'id'>;
-  dividend!: EntityTable<SummaryData, 'id'>;
-  currentStocks!: EntityTable<CurrentStockTable, 'id'>;
-  pastSales!: EntityTable<PastSaleTable, 'id'>;
+  summaryInfo! : EntityTable<SummaryData, 'id'>;
+  currentStocks! : EntityTable<CurrentStockTable, 'id'>;
+  pastSales! : EntityTable<PastSaleTable, 'id'>;
 
   constructor() {
     super('StocksDB');
     
     this.version(1).stores({
-      totalInvestment: 'id',
-      currentInvestment: 'id',
-      realizedProfit: 'id',
-      dividend: 'id',
+      summaryInfo : 'id',
       currentStocks: '++id, name, dateOfPossession, amountInput, returnRate',
       pastSales: '++id'
     });
@@ -38,3 +31,10 @@ class StocksDatabase extends Dexie {
 }
 
 export const StocksDB = new StocksDatabase();
+
+export const enum SUMMARY_INFO_KEYS {
+  TOTAL = "total",
+  CURRENT = "current",
+  PROFIT = "profit",
+  DIVIDEND = "dividend"
+}
