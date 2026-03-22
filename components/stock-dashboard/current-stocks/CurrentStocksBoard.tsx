@@ -7,24 +7,14 @@ import { stocksPriceAtom } from '@/store/price';
 import {useSortedCurrentStocks} from '@/hooks/useCurrentStocks';
 import HeaderReturnRate from './HeaderReturnRate';
 import TradeDetailModal from '@/components/modals/TradeDetailModal';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import StocksScrollView from './StocksScrollView';
-import { CurrentStockTable } from '@/lib/db';
 
 export default function CurrentStocksBoard() {
   const {updateDate, stocksPrice} = useAtomValue(stocksPriceAtom);
   const {sortedCurrentStocks, onHandlerSort} = useSortedCurrentStocks();
   const [open, setOpen] = useState(false);
   const [selectedStock, setSelectedStock] = useState<SelectedStock>({name : "", ticker : ""});
-  const [sortedStocks, setSortedStocks] = useState<CurrentStockTable[]>([]);
-    
-  useEffect(()=>{
-    async function getData(){
-      const data = await sortedCurrentStocks;
-      setSortedStocks(data);
-    }
-    getData();
-  },[sortedCurrentStocks]);
 
   const onHandlerClick = useCallback(() => {
     setOpen(!open);
@@ -55,7 +45,7 @@ export default function CurrentStocksBoard() {
                 <HeaderReturnRate stocksPrice={stocksPrice} onHandlerSort={onHandlerSort("returnRate")}/>
               </tr>
             </thead>
-            <StocksScrollView data={sortedStocks} onHandlerStock={onHandlerStock} />
+            <StocksScrollView data={sortedCurrentStocks} onHandlerStock={onHandlerStock} />
           </table>
         </div>
       </Card>
