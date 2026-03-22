@@ -1,5 +1,5 @@
 import type { StocksPrice } from "@/store/price";
-import { CurrentStockTable } from "./db";
+import { CurrentStockTable } from "../db";
 
 export const formatReturnRate = (stock : CurrentStockTable, stocksPrice : StocksPrice, exchangeRate = 1450) => {
   const price = stocksPrice[stock.ticker];

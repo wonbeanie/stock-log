@@ -60,7 +60,7 @@ export const readFilesAsBuffer = async (files: FileList) : Promise<WorkerMessage
     )
 
     return new Promise((resolve, reject) => {
-      const worker = new Worker(new URL('./worker.ts', import.meta.url));
+      const worker = new Worker(new URL('./worker/worker.ts', import.meta.url));
       worker.postMessage({buffers}, buffers);
 
       worker.onmessage = (e) => {
@@ -87,7 +87,7 @@ export const readFilesAsBuffer = async (files: FileList) : Promise<WorkerMessage
 
 export const updateExchangeRatio = async (exchangeRate : number) => {
   return new Promise((resolve, reject) => {
-    const worker = new Worker(new URL('./worker.ts', import.meta.url));
+    const worker = new Worker(new URL('./worker/worker.ts', import.meta.url));
     worker.postMessage(exchangeRate);
 
     worker.onmessage = (e) => {
@@ -99,7 +99,7 @@ export const updateExchangeRatio = async (exchangeRate : number) => {
 
 export const updateCurrentStocksPrice = async (priceInfo : PriceInfo) => {
   return new Promise((resolve, reject) => {
-    const worker = new Worker(new URL('./price-worker.ts', import.meta.url));
+    const worker = new Worker(new URL('./worker/price-worker.ts', import.meta.url));
     worker.postMessage(priceInfo);
 
     worker.onmessage = (e) => {

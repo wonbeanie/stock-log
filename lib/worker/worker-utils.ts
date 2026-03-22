@@ -1,4 +1,4 @@
-import type { excelData } from "./excel";
+import type { excelData } from "../excel";
 
 export const getHash = (data : excelData[]) => {
   if(data.length < 3){

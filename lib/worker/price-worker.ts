@@ -1,7 +1,7 @@
 /// <reference lib="webworker" />
 
 import { StocksPrice } from '@/store/price';
-import { CurrentStockTable, StocksDB } from './db';
+import { CurrentStockTable, StocksDB } from '../db';
 import { formatReturnRate } from './price-worker-utils';
 
 self.onmessage = async (e) => {

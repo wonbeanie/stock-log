@@ -2,10 +2,10 @@
 
 import { read, utils } from 'xlsx';
 import { clear, get, set } from 'idb-keyval';
-import { processExcelData } from './excel';
-import type { excelData } from './excel';
-import { StocksDB } from './db';
-import type { StocksData } from '../store/stocks';
+import { processExcelData } from '../excel';
+import type { excelData } from '../excel';
+import { StocksDB } from '../db';
+import type { StocksData } from '../../store/stocks';
 import { getHash } from './worker-utils';
 
 self.onmessage = async (e) => {
