@@ -1,4 +1,4 @@
-import type { CurrentStock, PastSale } from '@/store/stocks';
+import type { CurrentStock, PastSale } from '@/lib/type/stocks';
 import Dexie, { type EntityTable } from 'dexie';
 
 export interface CurrentStockTable extends CurrentStock{

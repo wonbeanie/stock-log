@@ -2,7 +2,6 @@ import { CurrentStockTable, StocksDB } from '@/lib/db';
 import { GET_PRICE, GET_STOCKS, GET_TICKER, GET_TICKERS } from '@/lib/graphql';
 import { isOfflineAtom, serverUrlAtom } from '@/store/baseAtoms';
 import { PriceInfo, StocksPrice, stocksPriceAtom } from '@/store/price';
-import { CurrentStocks, stockDashboardAtom } from '@/store/stocks';
 import { useQuery } from '@tanstack/react-query';
 import { request, } from 'graphql-request';
 import { useAtomValue } from 'jotai';

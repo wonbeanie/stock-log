@@ -1,4 +1,4 @@
-import type { CurrentStocks, PastSale, StocksData } from "@/store/stocks";
+import type { CurrentStocks, PastSale, StocksData } from "@/lib/type/stocks";
 import { formatDate, getDateOfPossession } from "./worker/worker-utils";
 
 export const processExcelData = (excelData : excelData[], exchangeRate = 1450) => {

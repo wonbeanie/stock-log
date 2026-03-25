@@ -2,7 +2,7 @@
 
 import React, { useRef } from 'react'
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { PastSale } from '@/store/stocks';
+import { PastSale } from '@/lib/type/stocks';
 import { SelectedHistory } from './PastSalesBoard';
 import HistoryCard from './HistoryCard';
 

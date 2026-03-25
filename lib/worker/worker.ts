@@ -5,7 +5,7 @@ import { clear, get, set } from 'idb-keyval';
 import { processExcelData } from '../excel';
 import type { excelData } from '../excel';
 import { StocksDB, SUMMARY_INFO_KEYS } from '../db';
-import type { StocksData } from '../../store/stocks';
+import type { StocksData } from '@/lib/type/stocks';
 import { getHash } from './worker-utils';
 import { WorkerMessage, WorkerStatus } from './worker-message';
 

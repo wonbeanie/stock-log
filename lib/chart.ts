@@ -1,5 +1,4 @@
 import { StocksPrice } from "@/store/price";
-import { CurrentStocks } from "@/store/stocks";
 import { CurrentStockTable } from "./db";
 
 export const formatChartData = (

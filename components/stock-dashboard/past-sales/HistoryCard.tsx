@@ -1,4 +1,4 @@
-import { PastSale } from '@/store/stocks';
+import { PastSale } from '@/lib/type/stocks';
 import { Typography } from '@mui/material';
 import React from 'react';
 

@@ -1,4 +1,4 @@
-import { PastSale } from '@/store/stocks'
+import { PastSale } from '@/lib/type/stocks'
 import { Typography } from '@mui/material'
 
 export default function History({history : {type, amount, date, profits, settledAmount, unitPrice}} : Props) {

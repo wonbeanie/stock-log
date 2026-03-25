@@ -1,4 +1,4 @@
-import type { CurrentStock, CurrentStocks } from "@/store/stocks";
+import type { CurrentStock, CurrentStocks } from "@/lib/type/stocks";
 import type { excelData } from "./excel";
 import type { PriceInfo, StocksPrice } from "@/store/price";
 import { WorkerMessage, WorkerStatus } from "./worker/worker-message";

@@ -2,7 +2,7 @@
 
 import { Chip } from '@mui/material';
 import ReturnRate from './ReturnRate';
-import { type CurrentStock } from '@/store/stocks';
+import { type CurrentStock } from '@/lib/type/stocks';
 import React from 'react';
 
 export default React.memo(function CurrentStock({stockName, stock} : {stockName : string, stock : CurrentStock}) {

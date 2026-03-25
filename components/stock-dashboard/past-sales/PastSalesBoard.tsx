@@ -1,11 +1,9 @@
 'use client'
 
-import { PastSale, stockDashboardAtom } from '@/store/stocks';
 import { Card, Typography } from '@mui/material';
 import { useAtomValue } from 'jotai';
-import HistoryCard from './HistoryCard';
 import TradeDetailModal from '@/components/modals/TradeDetailModal';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import PastStocksScrollView from './PastStocksScrollView';
 import { StocksDB } from '@/lib/db';
 import { lastHashAtom } from '@/store/excel';
