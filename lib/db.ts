@@ -31,10 +31,3 @@ class StocksDatabase extends Dexie {
 }
 
 export const StocksDB = new StocksDatabase();
-
-export const enum SUMMARY_INFO_KEYS {
-  TOTAL = "total",
-  CURRENT = "current",
-  PROFIT = "profit",
-  DIVIDEND = "dividend"
-}

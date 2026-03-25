@@ -20,6 +20,8 @@ export default function PastSalesBoard() {
     return StocksDB.pastSales.toArray();
   }, [lastHash]) || [];
 
+  console.log(lastHash);
+
   const onHandlerModal = useCallback(() => {
     setOpen(!open);
   }, [open]);

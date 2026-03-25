@@ -4,10 +4,11 @@ import { read, utils } from 'xlsx';
 import { clear, get, set } from 'idb-keyval';
 import { processExcelData } from '../excel';
 import type { excelData } from '../excel';
-import { StocksDB, SUMMARY_INFO_KEYS } from '../db';
+import { StocksDB } from '../db';
 import type { StocksData } from '@/lib/type/stocks';
 import { getHash } from './worker-utils';
 import { WorkerMessage, WorkerStatus } from './worker-message';
+import { LocalStorageKey, SUMMARY_INFO_KEYS } from '../type/storage';
 
 self.onmessage = async (e) => {
   try{
@@ -28,12 +29,12 @@ self.onmessage = async (e) => {
       data = combinedData.flat();
       newHash = getHash(data);
       await clear();
-      await set('EXCEL_DATA', data);
-      await set('LAST_HASH', newHash);
+      await set(LocalStorageKey.EXCEL_DATA, data);
+      await set(LocalStorageKey.LAST_HASH, newHash);
       stocksData = processExcelData(data);
     }
     else {
-      data = await get('EXCEL_DATA') || [];
+      data = await get(LocalStorageKey.EXCEL_DATA) || [];
       const exchangeRate = e.data.payload;
       stocksData = processExcelData(data, exchangeRate);
     }
@@ -57,9 +58,7 @@ self.onmessage = async (e) => {
 
     await StocksDB.currentStocks.bulkAdd(Object.values(stocksData.currentStocks));
     await StocksDB.pastSales.bulkAdd(stocksData.pastSales);
-    self.postMessage(new WorkerMessage(WorkerStatus.DONE, {
-      newHash
-    }))
+    self.postMessage(new WorkerMessage(WorkerStatus.DONE))
   }
   catch(err){
     console.error(err);
